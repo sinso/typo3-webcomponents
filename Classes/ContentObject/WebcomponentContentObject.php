@@ -4,71 +4,62 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\ContentObject;
 
-use Sinso\Webcomponents\DataProvider\DataProviderInterface;
+use Sinso\Webcomponents\DataProvider\Traits\RenderComponent;
+use Sinso\Webcomponents\Dto\Events\WebComponentWillBeRendered;
+use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
-use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 class WebcomponentContentObject extends AbstractContentObject
 {
+    use RenderComponent;
+
     public function render($conf = []): string
     {
-        $tagName = null;
-        $properties = null;
-        $content = null;
+        $webComponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
+        $webComponentRenderingData = $this->evaluateDataProvider($webComponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
+        $webComponentRenderingData = $this->evaluateTypoScriptConfiguration($webComponentRenderingData, $conf);
 
-        $inputData = $this->cObj->data ?? [];
+        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webComponentRenderingData, $this->cObj->data ?? []);
+        $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
+        $eventDispatcher->dispatch($event);
 
-        // Method 1: Evaluate dataProvider
-        if ($conf['dataProvider']) {
-            $dataProvider = GeneralUtility::makeInstance($conf['dataProvider']);
-            if ($dataProvider instanceof DataProviderInterface) {
-                $dataProvider->setInputData($inputData);
-                $dataProvider->setContentObjectRenderer($this->cObj);
-                $tagName = $dataProvider->getTagName();
-                $properties = $dataProvider->getProperties();
-                $content = $dataProvider->getContent();
-            }
+        if (!$webComponentRenderingData->isRenderable()) {
+            return '';
         }
 
-        // Method 2: Evaluate TypoScript configuration
-        if ($conf['properties.']) {
-            if (!is_array($properties)) {
-                $properties = [];
-            }
+        // render with tag builder
+        $markup = $this->renderMarkup($webComponentRenderingData);
+
+        // apply stdWrap
+        $markup = $this->cObj->stdWrap($markup, $conf['stdWrap.'] ?? []);
+
+        return $markup;
+    }
+
+    private function evaluateTypoScriptConfiguration(WebcomponentRenderingData $webComponentRenderingData, array $conf): WebcomponentRenderingData
+    {
+        if (isset($conf['properties.'])) {
             foreach ($conf['properties.'] as $key => $value) {
                 if (is_array($value)) {
                     continue;
                 }
-                $properties[$key] = $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']);
+                $webComponentRenderingData->setProperty($key, $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']));
             }
         }
-        if ($conf['tagName'] || $conf['tagName.']) {
-            $tagName = $this->cObj->stdWrap($conf['tagName'] ?? '', $conf['tagName.'] ?? []) ?: null;
+        if (($conf['tagName'] ?? '') || ($conf['tagName.'] ?? [])) {
+            $webComponentRenderingData->setTagName($this->cObj->stdWrap($conf['tagName'] ?? '', $conf['tagName.'] ?? []) ?: null);
         }
+        return $webComponentRenderingData;
+    }
 
-        // Don't render the Web Component if tagName or properties are null
-        if ($tagName === null || $properties === null) {
-            return '';
-        }
+    private function renderMarkup(WebcomponentRenderingData $webComponentRenderingData): string
+    {
+        $tagName = $webComponentRenderingData->getTagName();
+        $content = $webComponentRenderingData->getContent();
+        $properties = $webComponentRenderingData->getProperties();
 
-        // Render
-        $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
-        $tagBuilder->setTagName($tagName);
-        if (!empty($content)) {
-            $tagBuilder->setContent($content);
-        }
-        foreach ($properties as $key => $value) {
-            if ($value === null) {
-                continue;
-            }
-            if (!is_scalar($value)) {
-                $value = json_encode($value);
-            }
-            $tagBuilder->addAttribute($key, $value);
-        }
-        $tagBuilder->forceClosingTag(true);
-        $renderedTag = $tagBuilder->render();
-        return $this->cObj->stdWrap($renderedTag, $conf['stdWrap.'] ?? []);
+        return $this->renderComponent($tagName, $content, $properties);
     }
 }

@@ -6,13 +6,11 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 interface DataProviderInterface
 {
-    public function getContent(): ?string;
+    public function getContent(array $inputData): ?string;
 
-    public function getProperties(): ?array;
+    public function getProperties(array $inputData): ?array;
 
     public function getTagName(): ?string;
-
-    public function setInputData(array $inputData): void;
 
     public function setContentObjectRenderer(ContentObjectRenderer $contentObjectRenderer): void;
 }
