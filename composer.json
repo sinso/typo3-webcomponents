@@ -1,5 +1,5 @@
 {
-	"name": "smic/webcomponents",
+	"name": "sinso/webcomponents",
 	"type": "typo3-cms-extension",
 	"description": "Render Web Components",
 	"extra": {
@@ -9,7 +9,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Smic\\Webcomponents\\": "Classes/"
+			"Sinso\\Webcomponents\\": "Classes/"
 		}
 	},
 	"require": {

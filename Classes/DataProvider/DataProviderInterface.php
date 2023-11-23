@@ -1,6 +1,6 @@
 <?php
 
-namespace Smic\Webcomponents\DataProvider;
+namespace Sinso\Webcomponents\DataProvider;
 
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 

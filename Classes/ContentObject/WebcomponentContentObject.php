@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Smic\Webcomponents\ContentObject;
+namespace Sinso\Webcomponents\ContentObject;
 
-use Smic\Webcomponents\DataProvider\DataProviderInterface;
+use Sinso\Webcomponents\DataProvider\DataProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Smic\Webcomponents\DataProvider\Traits;
+namespace Sinso\Webcomponents\DataProvider\Traits;
 
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\FileRepository;
