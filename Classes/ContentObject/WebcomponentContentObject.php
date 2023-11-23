@@ -23,11 +23,10 @@ class WebcomponentContentObject extends AbstractContentObject
         if ($conf['dataProvider']) {
             $dataProvider = GeneralUtility::makeInstance($conf['dataProvider']);
             if ($dataProvider instanceof DataProviderInterface) {
-                $dataProvider->setInputData($inputData);
                 $dataProvider->setContentObjectRenderer($this->cObj);
                 $tagName = $dataProvider->getTagName();
-                $properties = $dataProvider->getProperties();
-                $content = $dataProvider->getContent();
+                $properties = $dataProvider->getProperties($inputData);
+                $content = $dataProvider->getContent($inputData);
             }
         }
 
