@@ -90,7 +90,7 @@ class WebcomponentContentObject extends AbstractContentObject
         return $tagBuilder->render();
     }
 
-    private function applySsr(string $markup, array $config): string
+    private function applySsr(string $markup, array $conf): string
     {
         $enableSsr = (bool)$this->cObj->stdWrap($conf['enableSsr'] ?? '', $conf['enableSsr.'] ?? []);
         if (!$enableSsr) {

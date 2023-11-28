@@ -3,3 +3,7 @@ services:
     autowire: true
     autoconfigure: true
     public: false
+
+  Sinso\Webcomponents\Service\:
+    resource: '../Classes/Service/*'
+    public: true
