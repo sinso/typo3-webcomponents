@@ -78,7 +78,7 @@ class WebcomponentContentObject extends AbstractContentObject
             $tagBuilder->setContent($content);
         }
         foreach ($properties as $key => $value) {
-            if ($value === null) {
+            if ($value === null || $value === false) {
                 continue;
             }
             if (!is_scalar($value)) {
