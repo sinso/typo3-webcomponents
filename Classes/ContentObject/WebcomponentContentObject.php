@@ -21,7 +21,8 @@ class WebcomponentContentObject extends AbstractContentObject
         $webComponentRenderingData = $this->evaluateDataProvider($webComponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
         $webComponentRenderingData = $this->evaluateTypoScriptConfiguration($webComponentRenderingData, $conf);
 
-        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webComponentRenderingData, $this->cObj->data ?? []);
+        $contentElementRecordData = $this->cObj->getCurrentTable() === 'tt_content' ? $this->cObj->data : [];
+        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webComponentRenderingData, $contentElementRecordData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
