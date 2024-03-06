@@ -41,9 +41,7 @@ trait RenderComponent
         $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
         if ($dataProvider instanceof DataProviderInterface) {
             $dataProvider->setContentObjectRenderer($contentObjectRenderer);
-            $webComponentRenderingData->setTagName($dataProvider->getTagName());
-            $webComponentRenderingData->setProperties($dataProvider->getProperties($inputData));
-            $webComponentRenderingData->setContent($dataProvider->getContent($inputData));
+            $webComponentRenderingData = $dataProvider->provide($inputData, $webComponentRenderingData);
         }
         return $webComponentRenderingData;
     }

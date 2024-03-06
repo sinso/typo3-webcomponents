@@ -7,7 +7,7 @@ namespace Sinso\Webcomponents\Dto;
 class WebcomponentRenderingData
 {
     private ?string $content;
-    private ?array $properties;
+    private array $properties = [];
     private ?string $tagName;
 
     public function getContent(): ?string
@@ -47,6 +47,6 @@ class WebcomponentRenderingData
 
     public function isRenderable(): bool
     {
-        return $this->tagName !== null && $this->properties !== null;
+        return $this->tagName !== null;
     }
 }

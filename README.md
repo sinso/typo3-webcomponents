@@ -45,24 +45,17 @@ class MyContentElementDataProvider implements DataProviderInterface
 {
     use ContentObjectRendererTrait;
 
-    public function getContent(array $inputData): ?string
+    public function provide(array $inputData, WebcomponentRenderingData $webcomponentRenderingData): WebcomponentRenderingData
     {
-        return '';
-    }
-
-    public function getProperties(array $inputData): ?array
-    {
-        return [
+        $properties = [
             'title' => $inputData['header'],
             'greeting' => 'Hello World!',
         ];
-    }
 
-    public function getTagName(): ?string
-    {
-        return 'my-web-component';
+        $webcomponentRenderingData->setTagName('my-web-component');
+        $webcomponentRenderingData->setProperties($properties);
     }
 }
 ```
 
-The 3 methods `getContent()`, `getProperties()` and `getTagName()` have a convention: They can return null and when any of them does that the web component is not rendered at all.
+Convention: When the tag name is not set, the web component will not be rendered at all.
