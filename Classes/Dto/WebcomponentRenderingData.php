@@ -6,7 +6,7 @@ namespace Sinso\Webcomponents\Dto;
 
 class WebcomponentRenderingData
 {
-    private ?string $content;
+    private ?string $content = null;
     private array $properties = [];
     private ?string $tagName;
 
