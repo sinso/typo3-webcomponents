@@ -8,7 +8,7 @@ class WebcomponentRenderingData
 {
     private ?string $content = null;
     private array $properties = [];
-    private ?string $tagName;
+    private ?string $tagName = null;
 
     public function getContent(): ?string
     {
