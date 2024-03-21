@@ -20,17 +20,17 @@ trait RenderSubComponent
             throw new \RuntimeException('DataProvider must implement DataProviderInterface');
         }
         $dataProvider->setContentObjectRenderer($this->contentObjectRenderer);
-        $webComponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
-        $webComponentRenderingData = $dataProvider->provide($inputData, $webComponentRenderingData);
+        $webcomponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
+        $webcomponentRenderingData = $dataProvider->provide($inputData, $webcomponentRenderingData);
 
-        if (!$webComponentRenderingData->isRenderable()) {
+        if (!$webcomponentRenderingData->isRenderable()) {
             return null;
         }
 
         return $this->renderComponent(
-            $webComponentRenderingData->getTagName(),
-            $webComponentRenderingData->getContent(),
-            $webComponentRenderingData->getProperties()
+            $webcomponentRenderingData->getTagName(),
+            $webcomponentRenderingData->getContent(),
+            $webcomponentRenderingData->getProperties()
         );
     }
 }

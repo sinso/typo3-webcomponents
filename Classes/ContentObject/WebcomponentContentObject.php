@@ -17,21 +17,21 @@ class WebcomponentContentObject extends AbstractContentObject
 
     public function render($conf = []): string
     {
-        $webComponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
-        $webComponentRenderingData = $this->evaluateDataProvider($webComponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
-        $webComponentRenderingData = $this->evaluateTypoScriptConfiguration($webComponentRenderingData, $conf);
+        $webcomponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
+        $webcomponentRenderingData = $this->evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
+        $webcomponentRenderingData = $this->evaluateTypoScriptConfiguration($webcomponentRenderingData, $conf);
 
         $contentElementRecordData = $this->cObj->getCurrentTable() === 'tt_content' ? $this->cObj->data : [];
-        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webComponentRenderingData, $contentElementRecordData);
+        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData, $contentElementRecordData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
-        if (!$webComponentRenderingData->isRenderable()) {
+        if (!$webcomponentRenderingData->isRenderable()) {
             return '';
         }
 
         // render with tag builder
-        $markup = $this->renderMarkup($webComponentRenderingData);
+        $markup = $this->renderMarkup($webcomponentRenderingData);
 
         // apply stdWrap
         $markup = $this->cObj->stdWrap($markup, $conf['stdWrap.'] ?? []);
@@ -39,27 +39,27 @@ class WebcomponentContentObject extends AbstractContentObject
         return $markup;
     }
 
-    private function evaluateTypoScriptConfiguration(WebcomponentRenderingData $webComponentRenderingData, array $conf): WebcomponentRenderingData
+    private function evaluateTypoScriptConfiguration(WebcomponentRenderingData $webcomponentRenderingData, array $conf): WebcomponentRenderingData
     {
         if (isset($conf['properties.'])) {
             foreach ($conf['properties.'] as $key => $value) {
                 if (is_array($value)) {
                     continue;
                 }
-                $webComponentRenderingData->setProperty($key, $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']));
+                $webcomponentRenderingData->setProperty($key, $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']));
             }
         }
         if (($conf['tagName'] ?? '') || ($conf['tagName.'] ?? [])) {
-            $webComponentRenderingData->setTagName($this->cObj->stdWrap($conf['tagName'] ?? '', $conf['tagName.'] ?? []) ?: null);
+            $webcomponentRenderingData->setTagName($this->cObj->stdWrap($conf['tagName'] ?? '', $conf['tagName.'] ?? []) ?: null);
         }
-        return $webComponentRenderingData;
+        return $webcomponentRenderingData;
     }
 
-    private function renderMarkup(WebcomponentRenderingData $webComponentRenderingData): string
+    private function renderMarkup(WebcomponentRenderingData $webcomponentRenderingData): string
     {
-        $tagName = $webComponentRenderingData->getTagName();
-        $content = $webComponentRenderingData->getContent();
-        $properties = $webComponentRenderingData->getProperties();
+        $tagName = $webcomponentRenderingData->getTagName();
+        $content = $webcomponentRenderingData->getContent();
+        $properties = $webcomponentRenderingData->getProperties();
 
         return $this->renderComponent($tagName, $content, $properties);
     }

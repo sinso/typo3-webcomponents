@@ -32,17 +32,17 @@ trait RenderComponent
         return $tagBuilder->render();
     }
 
-    private function evaluateDataProvider(WebcomponentRenderingData $webComponentRenderingData, string $dataProviderClassName, ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
+    private function evaluateDataProvider(WebcomponentRenderingData $webcomponentRenderingData, string $dataProviderClassName, ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
     {
         if (empty($dataProviderClassName)) {
-            return $webComponentRenderingData;
+            return $webcomponentRenderingData;
         }
         $inputData = $contentObjectRenderer->data ?? [];
         $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
         if ($dataProvider instanceof DataProviderInterface) {
             $dataProvider->setContentObjectRenderer($contentObjectRenderer);
-            $webComponentRenderingData = $dataProvider->provide($inputData, $webComponentRenderingData);
+            $webcomponentRenderingData = $dataProvider->provide($inputData, $webcomponentRenderingData);
         }
-        return $webComponentRenderingData;
+        return $webcomponentRenderingData;
     }
 }
