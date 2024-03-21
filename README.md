@@ -45,15 +45,16 @@ class MyContentElementDataProvider implements DataProviderInterface
 {
     use ContentObjectRendererTrait;
 
-    public function provide(array $inputData, WebcomponentRenderingData $webcomponentRenderingData): WebcomponentRenderingData
+    public function provide(WebcomponentRenderingData $webcomponentRenderingData): WebcomponentRenderingData
     {
+        $record = $webcomponentRenderingData->getContentRecord();
         $properties = [
-            'title' => $inputData['header'],
+            'title' => $record['header'],
             'greeting' => 'Hello World!',
         ];
 
         $webcomponentRenderingData->setTagName('my-web-component');
-        $webcomponentRenderingData->setProperties($properties);
+        $webcomponentRenderingData->setTagProperties($properties);
     }
 }
 ```

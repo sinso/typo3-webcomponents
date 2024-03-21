@@ -7,7 +7,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 interface DataProviderInterface
 {
-    public function provide(array $inputData, WebcomponentRenderingData $webcomponentRenderingData): WebcomponentRenderingData;
+    public function provide(WebcomponentRenderingData $webcomponentRenderingData): WebcomponentRenderingData;
 
     public function setContentObjectRenderer(ContentObjectRenderer $contentObjectRenderer): void;
 }

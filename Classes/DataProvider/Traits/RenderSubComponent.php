@@ -13,7 +13,7 @@ trait RenderSubComponent
     use ContentObjectRendererTrait;
     use RenderComponent;
 
-    protected function renderSubComponent(string $dataProviderClassName, $inputData = []): ?string
+    protected function renderSubComponent(string $dataProviderClassName, $additionalInputData = []): ?string
     {
         $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
         if (!$dataProvider instanceof DataProviderInterface) {
@@ -21,7 +21,8 @@ trait RenderSubComponent
         }
         $dataProvider->setContentObjectRenderer($this->contentObjectRenderer);
         $webcomponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
-        $webcomponentRenderingData = $dataProvider->provide($inputData, $webcomponentRenderingData);
+        $webcomponentRenderingData->setAdditionalInputData($additionalInputData);
+        $webcomponentRenderingData = $dataProvider->provide($webcomponentRenderingData);
 
         if (!$webcomponentRenderingData->isRenderable()) {
             return null;
@@ -29,8 +30,8 @@ trait RenderSubComponent
 
         return $this->renderComponent(
             $webcomponentRenderingData->getTagName(),
-            $webcomponentRenderingData->getContent(),
-            $webcomponentRenderingData->getProperties()
+            $webcomponentRenderingData->getTagContent(),
+            $webcomponentRenderingData->getTagProperties()
         );
     }
 }

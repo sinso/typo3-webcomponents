@@ -10,13 +10,7 @@ class WebComponentWillBeRendered
 {
     public function __construct(
         private readonly WebcomponentRenderingData $webcomponentRenderingData,
-        private readonly array $inputData,
     ) {
-    }
-
-    public function getInputData(): array
-    {
-        return $this->inputData;
     }
 
     public function getWebcomponentRenderingData(): WebcomponentRenderingData

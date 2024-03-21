@@ -37,11 +37,10 @@ trait RenderComponent
         if (empty($dataProviderClassName)) {
             return $webcomponentRenderingData;
         }
-        $inputData = $contentObjectRenderer->data ?? [];
         $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
         if ($dataProvider instanceof DataProviderInterface) {
             $dataProvider->setContentObjectRenderer($contentObjectRenderer);
-            $webcomponentRenderingData = $dataProvider->provide($inputData, $webcomponentRenderingData);
+            $webcomponentRenderingData = $dataProvider->provide($webcomponentRenderingData);
         }
         return $webcomponentRenderingData;
     }
