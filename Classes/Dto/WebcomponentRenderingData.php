@@ -6,33 +6,55 @@ namespace Sinso\Webcomponents\Dto;
 
 class WebcomponentRenderingData
 {
-    private ?string $content = null;
-    private array $properties = [];
+    private ?array $additionalInputData = null;
+    private ?array $contentRecord = null;
+    private ?string $tagContent = null;
     private ?string $tagName = null;
+    private array $tagProperties = [];
 
-    public function getContent(): ?string
+    public function getAdditionalInputData(): ?array
     {
-        return $this->content;
+        return $this->additionalInputData;
     }
 
-    public function setContent(?string $content): void
+    public function setAdditionalInputData(?array $additionalInputData): void
     {
-        $this->content = $content;
+        $this->additionalInputData = $additionalInputData;
     }
 
-    public function getProperties(): ?array
+    public function getContentRecord(): ?array
     {
-        return $this->properties;
+        return $this->contentRecord;
     }
 
-    public function setProperty(string $key, $value): void
+    public function setContentRecord(?array $contentRecord): void
     {
-        $this->properties[$key] = $value;
+        $this->contentRecord = $contentRecord;
     }
 
-    public function setProperties(?array $properties): void
+    public function getTagContent(): ?string
     {
-        $this->properties = $properties;
+        return $this->tagContent;
+    }
+
+    public function setTagContent(?string $tagContent): void
+    {
+        $this->tagContent = $tagContent;
+    }
+
+    public function getTagProperties(): ?array
+    {
+        return $this->tagProperties;
+    }
+
+    public function setTagProperty(string $key, $value): void
+    {
+        $this->tagProperties[$key] = $value;
+    }
+
+    public function setTagProperties(?array $tagProperties): void
+    {
+        $this->tagProperties = $tagProperties;
     }
 
     public function getTagName(): ?string

@@ -18,11 +18,13 @@ class WebcomponentContentObject extends AbstractContentObject
     public function render($conf = []): string
     {
         $webcomponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
+        if ($this->cObj->getCurrentTable() === 'tt_content') {
+            $webcomponentRenderingData->setContentRecord($this->cObj->data);
+        }
         $webcomponentRenderingData = $this->evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
         $webcomponentRenderingData = $this->evaluateTypoScriptConfiguration($webcomponentRenderingData, $conf);
 
-        $contentElementRecordData = $this->cObj->getCurrentTable() === 'tt_content' ? $this->cObj->data : [];
-        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData, $contentElementRecordData);
+        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
@@ -58,8 +60,8 @@ class WebcomponentContentObject extends AbstractContentObject
     private function renderMarkup(WebcomponentRenderingData $webcomponentRenderingData): string
     {
         $tagName = $webcomponentRenderingData->getTagName();
-        $content = $webcomponentRenderingData->getContent();
-        $properties = $webcomponentRenderingData->getProperties();
+        $content = $webcomponentRenderingData->getTagContent();
+        $properties = $webcomponentRenderingData->getTagProperties();
 
         return $this->renderComponent($tagName, $content, $properties);
     }
