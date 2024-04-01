@@ -48,7 +48,7 @@ class WebcomponentContentObject extends AbstractContentObject
                 if (is_array($value)) {
                     continue;
                 }
-                $webcomponentRenderingData->setProperty($key, $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']));
+                $webcomponentRenderingData->setTagProperty($key, $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']));
             }
         }
         if (($conf['tagName'] ?? '') || ($conf['tagName.'] ?? [])) {
