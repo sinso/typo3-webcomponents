@@ -21,6 +21,9 @@ class WebcomponentContentObject extends AbstractContentObject
         if ($this->cObj->getCurrentTable() === 'tt_content') {
             $webcomponentRenderingData->setContentRecord($this->cObj->data);
         }
+        if (isset($conf['additionalInputData.'])) {
+            $webcomponentRenderingData->setAdditionalInputData($conf['additionalInputData.']);
+        }
         $webcomponentRenderingData = $this->evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
         $webcomponentRenderingData = $this->evaluateTypoScriptConfiguration($webcomponentRenderingData, $conf);
 
