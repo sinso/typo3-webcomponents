@@ -9,13 +9,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 trait FileReferences
 {
     /**
+     * @param array $record
      * @param string $fieldName
-     * @param ?int $localUid
      * @param string $localTableName
      * @return FileReference[]
      */
-    protected function loadFileReferences(string $fieldName, ?int $localUid, string $localTableName = 'tt_content'): array
+    protected function loadFileReferences(array $record, string $fieldName, string $localTableName = 'tt_content'): array
     {
+        $localUid = $record['_LOCALIZED_UID'] ?? $record['uid'] ?? null;
         if (empty($localUid)) {
             return [];
         }
@@ -23,9 +24,9 @@ trait FileReferences
         return $fileRepository->findByRelation($localTableName, $fieldName, $localUid);
     }
 
-    protected function loadFileReference(string $fieldName, ?int $localUid, string $localTableName = 'tt_content'): ?FileReference
+    protected function loadFileReference(array $record, string $fieldName, string $localTableName = 'tt_content'): ?FileReference
     {
-        $fileReferences = $this->loadFileReferences($fieldName, $localUid, $localTableName);
+        $fileReferences = $this->loadFileReferences($record, $fieldName, $localTableName);
         if (empty($fileReferences)) {
             return null;
         }
