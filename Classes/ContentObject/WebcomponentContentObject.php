@@ -22,6 +22,15 @@ class WebcomponentContentObject extends AbstractContentObject
             $webcomponentRenderingData->setContentRecord($this->cObj->data);
         }
         if (isset($conf['additionalInputData.'])) {
+            // apply stdWrap to all additionalInputData properties
+            foreach ($conf['additionalInputData.'] as $key => $value) {
+                if (!str_ends_with($key, '.')) {
+                    continue;
+                }
+                $keyWithoutDot = substr($key, 0, -1);
+                $conf['additionalInputData.'][$keyWithoutDot] = $this->cObj->stdWrapValue($keyWithoutDot, $conf['additionalInputData.']);
+                unset($conf['additionalInputData.'][$key]);
+            }
             $webcomponentRenderingData->setAdditionalInputData($conf['additionalInputData.']);
         }
         $webcomponentRenderingData = $this->evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
