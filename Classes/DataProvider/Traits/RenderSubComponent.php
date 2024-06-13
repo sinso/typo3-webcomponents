@@ -13,7 +13,7 @@ trait RenderSubComponent
     use ContentObjectRendererTrait;
     use RenderComponent;
 
-    protected function renderSubComponent(string $dataProviderClassName, $additionalInputData = []): ?string
+    protected function renderSubComponent(string $dataProviderClassName, $additionalInputData = [], ?string $slot = null): ?string
     {
         $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
         if (!$dataProvider instanceof DataProviderInterface) {
@@ -28,10 +28,15 @@ trait RenderSubComponent
             return null;
         }
 
+        $properties = $webcomponentRenderingData->getTagProperties();
+        if ($slot !== null) {
+            $properties['slot'] = $slot;
+        }
+
         return $this->renderComponent(
             $webcomponentRenderingData->getTagName(),
             $webcomponentRenderingData->getTagContent(),
-            $webcomponentRenderingData->getTagProperties()
+            $properties,
         );
     }
 }
