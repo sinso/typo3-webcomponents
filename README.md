@@ -60,3 +60,18 @@ class MyContentElementDataProvider implements DataProviderInterface
 ```
 
 Convention: When the tag name is not set, the web component will not be rendered at all.
+
+## Render a web component in Fluid
+
+```html
+<html
+    xmlns:wc="http://typo3.org/ns/Sinso/Webcomponents/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<wc:render
+    dataProvider="Acme\\MyExt\\DataProvider\\LocationOverview"
+    inputData="{'header': 'This is the header'}"
+/>
+
+</html>
