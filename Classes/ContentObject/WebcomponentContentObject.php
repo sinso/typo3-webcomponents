@@ -33,7 +33,7 @@ class WebcomponentContentObject extends AbstractContentObject
             }
             $webcomponentRenderingData->setAdditionalInputData($conf['additionalInputData.']);
         }
-        $webcomponentRenderingData = $this->evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
+        $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
         $webcomponentRenderingData = $this->evaluateTypoScriptConfiguration($webcomponentRenderingData, $conf);
 
         $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData);
@@ -75,6 +75,6 @@ class WebcomponentContentObject extends AbstractContentObject
         $content = $webcomponentRenderingData->getTagContent();
         $properties = $webcomponentRenderingData->getTagProperties();
 
-        return $this->renderComponent($tagName, $content, $properties);
+        return self::renderComponent($tagName, $content, $properties);
     }
 }
