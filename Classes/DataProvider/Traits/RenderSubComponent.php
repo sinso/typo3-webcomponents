@@ -33,7 +33,7 @@ trait RenderSubComponent
             $properties['slot'] = $slot;
         }
 
-        return $this->renderComponent(
+        return self::renderComponent(
             $webcomponentRenderingData->getTagName(),
             $webcomponentRenderingData->getTagContent(),
             $properties,

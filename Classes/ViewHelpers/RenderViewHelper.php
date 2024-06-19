@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sinso\Webcomponents\ViewHelpers;
 
 use Sinso\Webcomponents\DataProvider\DataProviderInterface;
+use Sinso\Webcomponents\DataProvider\Traits\RenderComponent;
 use Sinso\Webcomponents\Dto\Events\WebComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
@@ -18,6 +19,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 class RenderViewHelper extends AbstractViewHelper
 {
     use CompileWithRenderStatic;
+    use RenderComponent;
 
     protected $escapeOutput = false;
 
@@ -49,42 +51,5 @@ class RenderViewHelper extends AbstractViewHelper
         $content = $webcomponentRenderingData->getTagContent();
         $properties = $webcomponentRenderingData->getTagProperties();
         return self::renderComponent($tagName, $content, $properties);
-    }
-
-    private static function evaluateDataProvider(WebcomponentRenderingData $webcomponentRenderingData, string $dataProviderClassName, ?ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
-    {
-        if (empty($dataProviderClassName)) {
-            return $webcomponentRenderingData;
-        }
-        if ($contentObjectRenderer === null) {
-            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $contentObjectRenderer->start([]);
-        }
-        $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
-        if ($dataProvider instanceof DataProviderInterface) {
-            $dataProvider->setContentObjectRenderer($contentObjectRenderer);
-            $webcomponentRenderingData = $dataProvider->provide($webcomponentRenderingData);
-        }
-        return $webcomponentRenderingData;
-    }
-
-    private static function renderComponent(string $tagName, ?string $content, array $properties): string
-    {
-        $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
-        $tagBuilder->setTagName($tagName);
-        if (!empty($content)) {
-            $tagBuilder->setContent($content);
-        }
-        foreach ($properties as $key => $value) {
-            if ($value === null) {
-                continue;
-            }
-            if (!is_scalar($value)) {
-                $value = json_encode($value);
-            }
-            $tagBuilder->addAttribute($key, $value);
-        }
-        $tagBuilder->forceClosingTag(true);
-        return $tagBuilder->render();
     }
 }

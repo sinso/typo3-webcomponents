@@ -12,7 +12,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 trait RenderComponent
 {
-    protected function renderComponent(string $tagName, ?string $content, array $properties): string
+    protected static function renderComponent(string $tagName, ?string $content, array $properties): string
     {
         $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
         $tagBuilder->setTagName($tagName);
@@ -32,10 +32,14 @@ trait RenderComponent
         return $tagBuilder->render();
     }
 
-    private function evaluateDataProvider(WebcomponentRenderingData $webcomponentRenderingData, string $dataProviderClassName, ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
+    private static function evaluateDataProvider(WebcomponentRenderingData $webcomponentRenderingData, string $dataProviderClassName, ?ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
     {
         if (empty($dataProviderClassName)) {
             return $webcomponentRenderingData;
+        }
+        if ($contentObjectRenderer === null) {
+            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $contentObjectRenderer->start([]);
         }
         $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
         if ($dataProvider instanceof DataProviderInterface) {
