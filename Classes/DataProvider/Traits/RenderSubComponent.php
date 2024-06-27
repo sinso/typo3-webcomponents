@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\DataProvider\Traits;
 
+use Sinso\Webcomponents\DataProvider\AssertionFailedException;
 use Sinso\Webcomponents\DataProvider\DataProviderInterface;
 use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -22,7 +23,11 @@ trait RenderSubComponent
         $dataProvider->setContentObjectRenderer($this->contentObjectRenderer);
         $webcomponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
         $webcomponentRenderingData->setAdditionalInputData($additionalInputData);
-        $webcomponentRenderingData = $dataProvider->provide($webcomponentRenderingData);
+        try {
+            $webcomponentRenderingData = $dataProvider->provide($webcomponentRenderingData);
+        } catch (AssertionFailedException $e) {
+            return null;
+        }
 
         if (!$webcomponentRenderingData->isRenderable()) {
             return null;

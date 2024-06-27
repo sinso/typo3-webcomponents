@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\ViewHelpers;
 
-use Sinso\Webcomponents\DataProvider\DataProviderInterface;
+use Sinso\Webcomponents\DataProvider\AssertionFailedException;
 use Sinso\Webcomponents\DataProvider\Traits\RenderComponent;
 use Sinso\Webcomponents\Dto\Events\WebComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
@@ -13,7 +13,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 class RenderViewHelper extends AbstractViewHelper
@@ -37,7 +36,11 @@ class RenderViewHelper extends AbstractViewHelper
         if ($arguments['contentObjectRenderer'] instanceof ContentObjectRenderer) {
             $webcomponentRenderingData->setContentRecord($arguments['contentObjectRenderer']->data);
         }
-        $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $arguments['dataProvider'], $arguments['contentObjectRenderer']);
+        try {
+            $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $arguments['dataProvider'], $arguments['contentObjectRenderer']);
+        } catch (AssertionFailedException $e) {
+            return $e->getRenderingPlaceholder();
+        }
 
         $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);

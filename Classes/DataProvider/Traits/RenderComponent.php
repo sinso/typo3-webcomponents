@@ -6,9 +6,9 @@ namespace Sinso\Webcomponents\DataProvider\Traits;
 
 use Sinso\Webcomponents\DataProvider\DataProviderInterface;
 use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
-use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 trait RenderComponent
 {
