@@ -34,15 +34,19 @@ class RenderViewHelper extends AbstractViewHelper
         $webcomponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
         $webcomponentRenderingData->setAdditionalInputData($arguments['inputData']);
         if ($arguments['contentObjectRenderer'] instanceof ContentObjectRenderer) {
-            $webcomponentRenderingData->setContentRecord($arguments['contentObjectRenderer']->data);
+            $contentObjectRenderer = $arguments['contentObjectRenderer'];
+        } else {
+            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $contentObjectRenderer->start([]);
         }
+        $webcomponentRenderingData->setContentRecord($arguments['contentObjectRenderer']->data);
         try {
-            $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $arguments['dataProvider'], $arguments['contentObjectRenderer']);
+            $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $arguments['dataProvider'], $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
         }
 
-        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData);
+        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $contentObjectRenderer, $webcomponentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
