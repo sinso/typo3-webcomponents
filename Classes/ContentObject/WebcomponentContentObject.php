@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\ContentObject;
 
+use Sinso\Webcomponents\DataProvider\AssertionFailedException;
 use Sinso\Webcomponents\DataProvider\Traits\RenderComponent;
 use Sinso\Webcomponents\Dto\Events\WebComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
@@ -33,7 +34,11 @@ class WebcomponentContentObject extends AbstractContentObject
             }
             $webcomponentRenderingData->setAdditionalInputData($conf['additionalInputData.']);
         }
-        $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
+        try {
+            $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $conf['dataProvider'] ?? '', $this->cObj);
+        } catch (AssertionFailedException $e) {
+            return $e->getRenderingPlaceholder();
+        }
         $webcomponentRenderingData = $this->evaluateTypoScriptConfiguration($webcomponentRenderingData, $conf);
 
         $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData);
