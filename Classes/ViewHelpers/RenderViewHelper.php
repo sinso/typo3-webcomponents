@@ -39,7 +39,7 @@ class RenderViewHelper extends AbstractViewHelper
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
         }
-        $webcomponentRenderingData->setContentRecord($arguments['contentObjectRenderer']->data);
+        $webcomponentRenderingData->setContentRecord($contentObjectRenderer->data);
         try {
             $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $arguments['dataProvider'], $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
