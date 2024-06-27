@@ -32,14 +32,10 @@ trait RenderComponent
         return $tagBuilder->render();
     }
 
-    private static function evaluateDataProvider(WebcomponentRenderingData $webcomponentRenderingData, string $dataProviderClassName, ?ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
+    private static function evaluateDataProvider(WebcomponentRenderingData $webcomponentRenderingData, string $dataProviderClassName, ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
     {
         if (empty($dataProviderClassName)) {
             return $webcomponentRenderingData;
-        }
-        if ($contentObjectRenderer === null) {
-            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $contentObjectRenderer->start([]);
         }
         $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
         if ($dataProvider instanceof DataProviderInterface) {

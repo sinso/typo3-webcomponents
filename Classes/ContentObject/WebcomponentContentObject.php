@@ -41,7 +41,7 @@ class WebcomponentContentObject extends AbstractContentObject
         }
         $webcomponentRenderingData = $this->evaluateTypoScriptConfiguration($webcomponentRenderingData, $conf);
 
-        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $webcomponentRenderingData);
+        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $this->cObj, $webcomponentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
