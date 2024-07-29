@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sinso\Webcomponents\DataProvider\Traits;
+namespace Sinso\Webcomponents\DataProviding\Traits;
 
-use Sinso\Webcomponents\DataProvider\DataProviderInterface;
-use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
+use Sinso\Webcomponents\DataProviding\ComponentInterface;
+use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
@@ -14,6 +14,7 @@ trait RenderComponent
 {
     protected static function renderComponent(string $tagName, ?string $content, array $properties): string
     {
+        /** @var TagBuilder $tagBuilder */
         $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
         $tagBuilder->setTagName($tagName);
         if (!empty($content)) {
@@ -32,16 +33,16 @@ trait RenderComponent
         return $tagBuilder->render();
     }
 
-    private static function evaluateDataProvider(WebcomponentRenderingData $webcomponentRenderingData, string $dataProviderClassName, ContentObjectRenderer $contentObjectRenderer): WebcomponentRenderingData
+    private static function evaluateComponent(ComponentRenderingData $componentRenderingData, string $componentClassName, ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
     {
-        if (empty($dataProviderClassName)) {
-            return $webcomponentRenderingData;
+        if (empty($componentClassName)) {
+            return $componentRenderingData;
         }
-        $dataProvider = GeneralUtility::makeInstance($dataProviderClassName);
-        if ($dataProvider instanceof DataProviderInterface) {
-            $dataProvider->setContentObjectRenderer($contentObjectRenderer);
-            $webcomponentRenderingData = $dataProvider->provide($webcomponentRenderingData);
+        $component = GeneralUtility::makeInstance($componentClassName);
+        if ($component instanceof ComponentInterface) {
+            $component->setContentObjectRenderer($contentObjectRenderer);
+            $componentRenderingData = $component->provide($componentRenderingData);
         }
-        return $webcomponentRenderingData;
+        return $componentRenderingData;
     }
 }

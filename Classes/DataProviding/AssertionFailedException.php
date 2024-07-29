@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sinso\Webcomponents\DataProvider;
+namespace Sinso\Webcomponents\DataProviding;
 
 class AssertionFailedException extends \RuntimeException
 {
