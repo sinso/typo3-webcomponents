@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\ViewHelpers;
 
-use Sinso\Webcomponents\DataProvider\AssertionFailedException;
-use Sinso\Webcomponents\DataProvider\Traits\RenderComponent;
-use Sinso\Webcomponents\Dto\Events\WebComponentWillBeRendered;
-use Sinso\Webcomponents\Dto\WebcomponentRenderingData;
+use Sinso\Webcomponents\DataProviding\AssertionFailedException;
+use Sinso\Webcomponents\DataProviding\Traits\RenderComponent;
+use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
+use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -24,39 +24,39 @@ class RenderViewHelper extends AbstractViewHelper
 
     public function initializeArguments(): void
     {
-        $this->registerArgument('dataProvider', 'string', 'Class name', true);
+        $this->registerArgument('component', 'string', 'Class name', true);
         $this->registerArgument('inputData', 'array', 'input data', false, []);
         $this->registerArgument('contentObjectRenderer', ContentObjectRenderer::class, 'current cObj');
     }
 
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
     {
-        $webcomponentRenderingData = GeneralUtility::makeInstance(WebcomponentRenderingData::class);
-        $webcomponentRenderingData->setAdditionalInputData($arguments['inputData']);
+        $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
+        $componentRenderingData->setAdditionalInputData($arguments['inputData']);
         if ($arguments['contentObjectRenderer'] instanceof ContentObjectRenderer) {
             $contentObjectRenderer = $arguments['contentObjectRenderer'];
         } else {
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
         }
-        $webcomponentRenderingData->setContentRecord($contentObjectRenderer->data);
+        $componentRenderingData->setContentRecord($contentObjectRenderer->data);
         try {
-            $webcomponentRenderingData = self::evaluateDataProvider($webcomponentRenderingData, $arguments['dataProvider'], $contentObjectRenderer);
+            $componentRenderingData = self::evaluateComponent($componentRenderingData, $arguments['component'], $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
         }
 
-        $event = GeneralUtility::makeInstance(WebComponentWillBeRendered::class, $contentObjectRenderer, $webcomponentRenderingData);
+        $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $contentObjectRenderer, $componentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
-        if (!$webcomponentRenderingData->isRenderable()) {
+        if (!$componentRenderingData->isRenderable()) {
             return '';
         }
 
-        $tagName = $webcomponentRenderingData->getTagName();
-        $content = $webcomponentRenderingData->getTagContent();
-        $properties = $webcomponentRenderingData->getTagProperties();
+        $tagName = $componentRenderingData->getTagName();
+        $content = $componentRenderingData->getTagContent();
+        $properties = $componentRenderingData->getTagProperties();
         return self::renderComponent($tagName, $content, $properties);
     }
 }

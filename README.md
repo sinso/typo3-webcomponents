@@ -24,37 +24,38 @@ Generates the output:
 ></my-web-component>
 ```
 
-## DataProvider based rendering
+## Component class based rendering
 
 You can populate the web component with PHP:
 
 ```
 tt_content.tx_myext_mycontentelement = WEBCOMPONENT
-tt_content.tx_myext_mycontentelement.dataProvider = Acme\MyExt\DataProvider\MyContentElementDataProvider
+tt_content.tx_myext_mycontentelement.component = Acme\MyExt\Components\MyContentElement
 ```
 
 ```php
 <?php
 
-namespace Acme\MyExt\DataProvider;
+namespace Acme\MyExt\Components;
 
-use Sinso\Webcomponents\DataProvider\DataProviderInterface;
-use Sinso\Webcomponents\DataProvider\Traits\ContentObjectRendererTrait;
+use Sinso\Webcomponents\DataProviding\ComponentInterface;
+use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
+use Sinso\Webcomponents\Dto\ComponentRenderingData;
 
-class MyContentElementDataProvider implements DataProviderInterface
+class MyContentElement implements ComponentInterface
 {
     use ContentObjectRendererTrait;
 
-    public function provide(WebcomponentRenderingData $webcomponentRenderingData): WebcomponentRenderingData
+    public function provide(ComponentRenderingData $componentRenderingData): WebcomponentRenderingData
     {
-        $record = $webcomponentRenderingData->getContentRecord();
+        $record = $componentRenderingData->getContentRecord();
         $properties = [
             'title' => $record['header'],
             'greeting' => 'Hello World!',
         ];
 
-        $webcomponentRenderingData->setTagName('my-web-component');
-        $webcomponentRenderingData->setTagProperties($properties);
+        $componentRenderingData->setTagName('my-web-component');
+        $componentRenderingData->setTagProperties($properties);
     }
 }
 ```
@@ -70,8 +71,9 @@ Convention: When the tag name is not set, the web component will not be rendered
 >
 
 <wc:render
-    dataProvider="Acme\\MyExt\\DataProvider\\LocationOverview"
+    component="Acme\\MyExt\\Components\\LocationOverview"
     inputData="{'header': 'This is the header'}"
 />
 
 </html>
+```

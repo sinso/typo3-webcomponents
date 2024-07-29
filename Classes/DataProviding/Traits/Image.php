@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sinso\Webcomponents\DataProvider\Traits;
+namespace Sinso\Webcomponents\DataProviding\Traits;
 
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Resource\FileReference;

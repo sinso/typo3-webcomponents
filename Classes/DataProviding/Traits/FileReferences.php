@@ -1,6 +1,6 @@
 <?php
 
-namespace Sinso\Webcomponents\DataProvider\Traits;
+namespace Sinso\Webcomponents\DataProviding\Traits;
 
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\FileRepository;
@@ -9,9 +9,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 trait FileReferences
 {
     /**
-     * @param array $record
-     * @param string $fieldName
-     * @param string $localTableName
      * @return FileReference[]
      */
     protected function loadFileReferences(array $record, string $fieldName, string $localTableName = 'tt_content'): array
