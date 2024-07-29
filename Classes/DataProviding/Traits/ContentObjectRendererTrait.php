@@ -1,6 +1,6 @@
 <?php
 
-namespace Sinso\Webcomponents\DataProvider\Traits;
+namespace Sinso\Webcomponents\DataProviding\Traits;
 
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 

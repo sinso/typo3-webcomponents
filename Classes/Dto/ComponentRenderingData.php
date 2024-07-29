@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\Dto;
 
-class WebcomponentRenderingData
+class ComponentRenderingData
 {
     private ?array $additionalInputData = null;
     private ?array $contentRecord = null;

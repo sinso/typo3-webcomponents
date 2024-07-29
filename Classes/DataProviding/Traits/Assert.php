@@ -1,8 +1,8 @@
 <?php
 
-namespace Sinso\Webcomponents\DataProvider\Traits;
+namespace Sinso\Webcomponents\DataProviding\Traits;
 
-use Sinso\Webcomponents\DataProvider\AssertionFailedException;
+use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 
 /**
  * Use assertions in your web component to skip rendering if a condition is not met.
