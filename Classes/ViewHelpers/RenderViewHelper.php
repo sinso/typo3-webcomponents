@@ -42,16 +42,11 @@ class RenderViewHelper extends AbstractViewHelper
         $componentRenderingData->setContentRecord($contentObjectRenderer->data);
         try {
             $componentRenderingData = self::evaluateComponent($componentRenderingData, $arguments['component'], $contentObjectRenderer);
+            $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $contentObjectRenderer, $componentRenderingData);
+            $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
+            $eventDispatcher->dispatch($event);
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
-        }
-
-        $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $contentObjectRenderer, $componentRenderingData);
-        $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
-        $eventDispatcher->dispatch($event);
-
-        if (!$componentRenderingData->isRenderable()) {
-            return '';
         }
 
         $tagName = $componentRenderingData->getTagName();
