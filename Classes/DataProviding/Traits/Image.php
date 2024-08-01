@@ -6,18 +6,12 @@ namespace Sinso\Webcomponents\DataProviding\Traits;
 
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference as ExtbaseFileReference;
 use TYPO3\CMS\Extbase\Service\ImageService;
 
 trait Image
 {
-    private ImageService $imageService;
-
-    public function injectImageService(ImageService $imageService): void
-    {
-        $this->imageService = $imageService;
-    }
-
     public function getImageUri($image, $width, $height, string $cropVariant = 'default', bool $absolute = false): string
     {
         if ($image instanceof ExtbaseFileReference) {
@@ -41,7 +35,8 @@ trait Image
             $processingInstructions['fileExtension'] = $arguments['fileExtension'];
         }
 
-        $processedImage = $this->imageService->applyProcessingInstructions($image, $processingInstructions);
-        return $this->imageService->getImageUri($processedImage, $absolute);
+        $imageService = GeneralUtility::makeInstance(ImageService::class);
+        $processedImage = $imageService->applyProcessingInstructions($image, $processingInstructions);
+        return $imageService->getImageUri($processedImage, $absolute);
     }
 }
