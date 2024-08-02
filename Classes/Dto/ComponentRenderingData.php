@@ -6,27 +6,48 @@ namespace Sinso\Webcomponents\Dto;
 
 class ComponentRenderingData
 {
+    /**
+     * @var array<string, mixed>|null $additionalInputData
+     */
     private ?array $additionalInputData = null;
+    /**
+     * @var array<string, string|integer>|null $contentRecord
+     */
     private ?array $contentRecord = null;
     private ?string $tagContent = null;
     private ?string $tagName = null;
+    /**
+     * @var array<string, mixed> $tagProperties
+     */
     private array $tagProperties = [];
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getAdditionalInputData(): ?array
     {
         return $this->additionalInputData;
     }
 
+    /**
+     * @param array<string, mixed>|null $additionalInputData
+     */
     public function setAdditionalInputData(?array $additionalInputData): void
     {
         $this->additionalInputData = $additionalInputData;
     }
 
+    /**
+     * @return array<string, string|integer>|null
+     */
     public function getContentRecord(): ?array
     {
         return $this->contentRecord;
     }
 
+    /**
+     * @param array<string, string|integer>|null $contentRecord
+     */
     public function setContentRecord(?array $contentRecord): void
     {
         $this->contentRecord = $contentRecord;
@@ -42,16 +63,22 @@ class ComponentRenderingData
         $this->tagContent = $tagContent;
     }
 
-    public function getTagProperties(): ?array
+    /**
+     * @return array<string, mixed>
+     */
+    public function getTagProperties(): array
     {
         return $this->tagProperties;
     }
 
-    public function setTagProperty(string $key, $value): void
+    public function setTagProperty(string $key, mixed $value): void
     {
         $this->tagProperties[$key] = $value;
     }
 
+    /**
+     * @param array<string, mixed>|null $tagProperties
+     */
     public function setTagProperties(?array $tagProperties): void
     {
         $this->tagProperties = $tagProperties;

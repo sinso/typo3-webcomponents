@@ -12,4 +12,4 @@ jobs:
           args: --ignore-platform-reqs
 
       - name: PHPStan Static Analysis
-        run: vendor/bin/phpstan analyse -l 5 Classes/
+        run: vendor/bin/phpstan analyse -c .github/phpstan.neon
