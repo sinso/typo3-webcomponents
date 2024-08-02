@@ -16,6 +16,9 @@ class WebcomponentContentObject extends AbstractContentObject
 {
     use RenderComponent;
 
+    /**
+     * @param array<string, mixed> $conf
+     */
     public function render($conf = []): string
     {
         $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
@@ -59,6 +62,9 @@ class WebcomponentContentObject extends AbstractContentObject
         return $markup;
     }
 
+    /**
+     * @param array<string, mixed> $conf
+     */
     private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, array $conf): ComponentRenderingData
     {
         if (isset($conf['properties.'])) {

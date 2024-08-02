@@ -12,6 +12,9 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 trait RenderComponent
 {
+    /**
+     * @param array<string, mixed> $properties
+     */
     protected static function renderComponent(string $tagName, ?string $content, array $properties): string
     {
         /** @var TagBuilder $tagBuilder */
@@ -27,7 +30,7 @@ trait RenderComponent
             if (!is_scalar($value)) {
                 $value = json_encode($value);
             }
-            $tagBuilder->addAttribute($key, $value);
+            $tagBuilder->addAttribute($key, (string)$value);
         }
         $tagBuilder->forceClosingTag(true);
         return $tagBuilder->render();
@@ -38,11 +41,12 @@ trait RenderComponent
         if (empty($componentClassName)) {
             return $componentRenderingData;
         }
+        /** @phpstan-ignore-next-line */
         $component = GeneralUtility::makeInstance($componentClassName);
-        if ($component instanceof ComponentInterface) {
-            $component->setContentObjectRenderer($contentObjectRenderer);
-            $componentRenderingData = $component->provide($componentRenderingData);
+        if (!$component instanceof ComponentInterface) {
+            return $componentRenderingData;
         }
-        return $componentRenderingData;
+        $component->setContentObjectRenderer($contentObjectRenderer);
+        return $component->provide($componentRenderingData);
     }
 }
