@@ -4,6 +4,9 @@ services:
     autoconfigure: true
     public: false
 
+  Sinso\Webcomponents\:
+    resource: '../Classes/*'
+
   Sinso\Webcomponents\ContentObject\WebcomponentContentObject:
     tags:
       - name: frontend.contentobject

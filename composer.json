@@ -5,7 +5,10 @@
 	"description": "Render Web Components",
 	"extra": {
 		"typo3/cms": {
-			"extension-key": "webcomponents"
+			"extension-key": "webcomponents",
+			"Package": {
+				"serviceProvider": "Sinso\\Webcomponents\\ServiceProvider"
+			}
 		}
 	},
 	"autoload": {
@@ -15,6 +18,6 @@
 	},
 	"require": {
 		"ext-json": "*",
-		"typo3/cms-core": "^11.0 || ^12.0"
+		"typo3/cms-core": "^12.0 || ^13.0"
 	}
 }
