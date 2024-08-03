@@ -5,7 +5,10 @@
 	"description": "Render Web Components",
 	"extra": {
 		"typo3/cms": {
-			"extension-key": "webcomponents"
+			"extension-key": "webcomponents",
+			"Package": {
+				"serviceProvider": "Sinso\\Webcomponents\\ServiceProvider"
+			}
 		}
 	},
 	"autoload": {
@@ -25,7 +28,20 @@
 		"typo3/coding-standards": "^0.8.0",
 		"ssch/typo3-rector": "^2.6"
 	},
+	"suggest": {
+		"contentblocks/content-blocks": "Define webcomponents as content blocks"
+	},
 	"config": {
 		"allow-plugins": true
+	},
+	"scripts": {
+		"lint": [
+			"@php-cs-fixer",
+			"@phpstan",
+			"@rector"
+		],
+		"php-cs-fixer": "php-cs-fixer fix --config=./.github/.php-cs-fixer.dist.php",
+		"phpstan": "phpstan analyse --configuration=./.github/phpstan.neon",
+		"rector": "rector process --config=./.github/rector.php"
 	}
 }

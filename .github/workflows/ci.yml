@@ -12,7 +12,7 @@ jobs:
           args: --ignore-platform-reqs
 
       - name: PHPStan Static Analysis
-        run: vendor/bin/phpstan analyse -c .github/phpstan.neon
+        run: composer phpstan
 
   php-cs-fixer:
     runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
           args: --ignore-platform-reqs
 
       - name: PHP CS Fixer Static Analysis
-        run: vendor/bin/php-cs-fixer fix --config=./.github/.php-cs-fixer.dist.php
+        run: composer php-cs-fixer
 
   rector:
     runs-on: ubuntu-latest
@@ -34,4 +34,4 @@ jobs:
           args: --ignore-platform-reqs
 
       - name: Rector
-        run:  vendor/bin/rector process --config=./.github/rector.php
+        run:  composer rector
