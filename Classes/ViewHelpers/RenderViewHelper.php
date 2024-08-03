@@ -32,6 +32,7 @@ class RenderViewHelper extends AbstractViewHelper
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
     {
         $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
+        assert(is_array($arguments['inputData']));
         $componentRenderingData->setAdditionalInputData($arguments['inputData']);
         if ($arguments['contentObjectRenderer'] instanceof ContentObjectRenderer) {
             $contentObjectRenderer = $arguments['contentObjectRenderer'];
@@ -40,6 +41,7 @@ class RenderViewHelper extends AbstractViewHelper
             $contentObjectRenderer->start([]);
         }
         $componentRenderingData->setContentRecord($contentObjectRenderer->data);
+        assert(is_string($arguments['component']));
         try {
             $componentRenderingData = self::evaluateComponent($componentRenderingData, $arguments['component'], $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
@@ -51,6 +53,10 @@ class RenderViewHelper extends AbstractViewHelper
         $eventDispatcher->dispatch($event);
 
         $tagName = $componentRenderingData->getTagName();
+        if ($tagName === null) {
+            $e = new AssertionFailedException('No tag name provided', 1722689282);
+            return $e->getRenderingPlaceholder();
+        }
         $content = $componentRenderingData->getTagContent();
         $properties = $componentRenderingData->getTagProperties();
         return self::renderComponent($tagName, $content, $properties);

@@ -27,10 +27,10 @@ class WebcomponentContentObject extends AbstractContentObject
     public function render($conf = []): string
     {
         $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
-        if ($this->cObj->getCurrentTable() === 'tt_content') {
+        if ($this->cObj?->getCurrentTable() === 'tt_content') {
             $componentRenderingData->setContentRecord($this->cObj->data);
         }
-        if (isset($conf['additionalInputData.'])) {
+        if (is_array($conf['additionalInputData.'] ?? null)) {
             // apply stdWrap to all additionalInputData properties
             foreach ($conf['additionalInputData.'] as $key => $value) {
                 $key = (string) $key;
@@ -38,15 +38,18 @@ class WebcomponentContentObject extends AbstractContentObject
                     continue;
                 }
                 $keyWithoutDot = substr($key, 0, -1);
-                $conf['additionalInputData.'][$keyWithoutDot] = $this->cObj->stdWrapValue($keyWithoutDot, $conf['additionalInputData.']);
+                $conf['additionalInputData.'][$keyWithoutDot] = $this->cObj?->stdWrapValue($keyWithoutDot, $conf['additionalInputData.']);
                 unset($conf['additionalInputData.'][$key]);
             }
             $componentRenderingData->setAdditionalInputData($conf['additionalInputData.']);
         }
-        try {
-            $componentRenderingData = self::evaluateComponent($componentRenderingData, $conf['component'] ?? '', $this->cObj);
-        } catch (AssertionFailedException $e) {
-            return $e->getRenderingPlaceholder();
+        $componentClassName = $this->cObj?->stdWrapValue('component', $conf, null);
+        if (is_string($componentClassName)) {
+            try {
+                $componentRenderingData = self::evaluateComponent($componentRenderingData, $componentClassName, $this->cObj);
+            } catch (AssertionFailedException $e) {
+                return $e->getRenderingPlaceholder();
+            }
         }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
@@ -60,7 +63,9 @@ class WebcomponentContentObject extends AbstractContentObject
         }
 
         // apply stdWrap
-        $markup = $this->cObj->stdWrap($markup, $conf['stdWrap.'] ?? []);
+        if (is_array($conf['stdWrap.'] ?? null)) {
+            $markup = $this->cObj?->stdWrap($markup, $conf['stdWrap.']) ?? $markup;
+        }
 
         return $markup;
     }
@@ -70,15 +75,15 @@ class WebcomponentContentObject extends AbstractContentObject
      */
     private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, array $conf): ComponentRenderingData
     {
-        if (isset($conf['properties.'])) {
+        if (is_array($conf['properties.'] ?? null) ) {
             foreach ($conf['properties.'] as $key => $value) {
                 if (is_array($value)) {
                     continue;
                 }
-                $componentRenderingData->setTagProperty($key, $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']));
+                $componentRenderingData->setTagProperty($key, $this->cObj?->cObjGetSingle($value, $conf['properties.'][$key . '.']));
             }
         }
-        $tagName = $this->cObj->stdWrapValue('tagName', $conf);
+        $tagName = $this->cObj?->stdWrapValue('tagName', $conf);
         if (is_string($tagName) && $tagName !== '') {
             $componentRenderingData->setTagName($tagName);
         }

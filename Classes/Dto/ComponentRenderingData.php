@@ -77,9 +77,9 @@ class ComponentRenderingData
     }
 
     /**
-     * @param array<string, mixed>|null $tagProperties
+     * @param array<string, mixed> $tagProperties
      */
-    public function setTagProperties(?array $tagProperties): void
+    public function setTagProperties(array $tagProperties): void
     {
         $this->tagProperties = $tagProperties;
     }
