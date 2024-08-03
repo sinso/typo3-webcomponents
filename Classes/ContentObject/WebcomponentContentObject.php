@@ -6,8 +6,8 @@ namespace Sinso\Webcomponents\ContentObject;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\Traits\RenderComponent;
-use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
@@ -18,8 +18,7 @@ class WebcomponentContentObject extends AbstractContentObject
 
     public function __construct(
         private readonly EventDispatcher $eventDispatcher,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed> $conf
@@ -33,7 +32,7 @@ class WebcomponentContentObject extends AbstractContentObject
         if (is_array($conf['additionalInputData.'] ?? null)) {
             // apply stdWrap to all additionalInputData properties
             foreach ($conf['additionalInputData.'] as $key => $value) {
-                $key = (string) $key;
+                $key = (string)$key;
                 if (!str_ends_with($key, '.')) {
                     continue;
                 }
@@ -75,7 +74,7 @@ class WebcomponentContentObject extends AbstractContentObject
      */
     private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, array $conf): ComponentRenderingData
     {
-        if (is_array($conf['properties.'] ?? null) ) {
+        if (is_array($conf['properties.'] ?? null)) {
             foreach ($conf['properties.'] as $key => $value) {
                 if (is_array($value)) {
                     continue;

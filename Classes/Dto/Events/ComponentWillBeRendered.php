@@ -15,8 +15,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 class ComponentWillBeRendered
 {
     public function __construct(
-        public readonly ContentObjectRenderer  $contentObjectRenderer,
+        public readonly ContentObjectRenderer $contentObjectRenderer,
         public readonly ComponentRenderingData $componentRenderingData,
-    ) {
-    }
+    ) {}
 }

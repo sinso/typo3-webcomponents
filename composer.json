@@ -20,7 +20,9 @@
 	},
 	"require-dev": {
 		"phpstan/phpstan": "^1.11.9",
-		"saschaegerer/phpstan-typo3": "^1.10"
+		"saschaegerer/phpstan-typo3": "^1.10",
+		"friendsofphp/php-cs-fixer": "^3.61",
+		"typo3/coding-standards": "^0.8.0"
 	},
 	"config": {
 		"allow-plugins": true
