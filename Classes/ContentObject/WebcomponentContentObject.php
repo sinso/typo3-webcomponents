@@ -16,6 +16,11 @@ class WebcomponentContentObject extends AbstractContentObject
 {
     use RenderComponent;
 
+    public function __construct(
+        private readonly EventDispatcher $eventDispatcher,
+    ) {
+    }
+
     /**
      * @param array<string, mixed> $conf
      */
@@ -46,9 +51,8 @@ class WebcomponentContentObject extends AbstractContentObject
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
         $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $this->cObj, $componentRenderingData);
-        $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         try {
-            $eventDispatcher->dispatch($event);
+            $this->eventDispatcher->dispatch($event);
             // render with tag builder
             $markup = $this->renderMarkup($componentRenderingData);
         } catch (AssertionFailedException $e) {
