@@ -36,7 +36,7 @@ trait RenderComponent
         return $tagBuilder->render();
     }
 
-    private static function evaluateComponent(ComponentRenderingData $componentRenderingData, string $componentClassName, ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
+    private static function evaluateComponent(ComponentRenderingData $componentRenderingData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
     {
         if (empty($componentClassName)) {
             return $componentRenderingData;
@@ -45,6 +45,10 @@ trait RenderComponent
         $component = GeneralUtility::makeInstance($componentClassName);
         if (!$component instanceof ComponentInterface) {
             return $componentRenderingData;
+        }
+        if ($contentObjectRenderer === null) {
+            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $contentObjectRenderer->start([]);
         }
         $component->setContentObjectRenderer($contentObjectRenderer);
         return $component->provide($componentRenderingData);
