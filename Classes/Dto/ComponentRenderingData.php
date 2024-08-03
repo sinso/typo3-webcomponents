@@ -11,7 +11,7 @@ class ComponentRenderingData
      */
     private ?array $additionalInputData = null;
     /**
-     * @var array<string, string|integer>|null $contentRecord
+     * @var array<string, string|int>|null $contentRecord
      */
     private ?array $contentRecord = null;
     private ?string $tagContent = null;
@@ -38,7 +38,7 @@ class ComponentRenderingData
     }
 
     /**
-     * @return array<string, string|integer>|null
+     * @return array<string, string|int>|null
      */
     public function getContentRecord(): ?array
     {
@@ -46,7 +46,7 @@ class ComponentRenderingData
     }
 
     /**
-     * @param array<string, string|integer>|null $contentRecord
+     * @param array<string, string|int>|null $contentRecord
      */
     public function setContentRecord(?array $contentRecord): void
     {

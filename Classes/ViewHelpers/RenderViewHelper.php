@@ -6,8 +6,8 @@ namespace Sinso\Webcomponents\ViewHelpers;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\Traits\RenderComponent;
-use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
