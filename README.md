@@ -28,20 +28,17 @@ Generates the output:
 
 You can populate the web component with PHP:
 
-```
-tt_content.tx_myext_mycontentelement = WEBCOMPONENT
-tt_content.tx_myext_mycontentelement.component = Acme\MyExt\Components\MyContentElement
-```
-
 ```php
 <?php
 
 namespace Acme\MyExt\Components;
 
+use Sinso\Webcomponents\Attribute\ComponentForContentElement;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
 
+#[ComponentForContentElement(cType: 'tx_myext_my-content-element')]
 class MyContentElement implements ComponentInterface
 {
     public function provide(InputData $inputData): ComponentRenderingData
@@ -59,6 +56,20 @@ class MyContentElement implements ComponentInterface
 }
 ```
 
+The `#[ComponentForContentElement]` attribute takes care of setting up the necessary TypoScript in the background.
+Repeat it to render several content element types with the same component class. It only applies to component classes
+that are registered as services with `autoconfigure: true`, which is the default of an extension's `Services.yaml`.
+
+The generated TypoScript is added as the last template of the page tree, so it also replaces rendering definitions of
+site sets like `typo3/fluid-styled-content`. As a consequence it cannot be configured further from your own TypoScript:
+content elements that need more than a component class - additional `properties`, a conditional `component`, `stdWrap` -
+are registered in TypoScript instead of with the attribute. The Template Analyzer of the backend module *TypoScript*
+lists the generated template with all its assignments.
+
+Since the generated TypoScript comes last, page TypoScript must reference the content element definitions
+(`renderObj =< tt_content`) rather than copy them (`renderObj < tt_content`): a copy is resolved while the earlier
+TypoScript is parsed and would not contain the components registered with the attribute.
+
 ## Abort rendering
 
 The component classes can use the `\Sinso\Webcomponents\DataProviding\Traits\Assert` trait to abort rendering, for example if the record is not available:
@@ -68,6 +79,7 @@ The component classes can use the `\Sinso\Webcomponents\DataProviding\Traits\Ass
 
 namespace Acme\MyExt\Components;
 
+use Sinso\Webcomponents\Attribute\ComponentForContentElement;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Helpers\FileReferencesHelper;
 use Sinso\Webcomponents\DataProviding\Traits\Assert;
@@ -75,6 +87,7 @@ use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
 use TYPO3\CMS\Core\Resource\FileReference;
 
+#[ComponentForContentElement(cType: 'image')]
 class Image implements ComponentInterface
 {
     use Assert;

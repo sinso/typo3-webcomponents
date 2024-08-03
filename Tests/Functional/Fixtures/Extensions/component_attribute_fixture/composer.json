@@ -1,0 +1,16 @@
+{
+  "name": "sinso/component-attribute-fixture",
+  "type": "typo3-cms-extension",
+  "description": "Functional test fixture extension for ComponentForContentElement",
+  "version": "1.0.0",
+  "autoload": {
+    "psr-4": {
+      "Sinso\\ComponentAttributeFixture\\": "Classes"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "component_attribute_fixture"
+    }
+  }
+}
