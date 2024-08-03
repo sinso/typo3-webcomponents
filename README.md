@@ -60,7 +60,41 @@ class MyContentElement implements ComponentInterface
 }
 ```
 
-Convention: When the tag name is not set, the web component will not be rendered at all.
+## Abort rendering
+
+The component classes can use the `\Sinso\Webcomponents\DataProviding\Traits\Assert` trait to abort rendering, for example if the record is not available:
+
+```php
+<?php
+
+namespace Acme\MyExt\Components;
+
+use Sinso\Webcomponents\DataProviding\ComponentInterface;
+use Sinso\Webcomponents\DataProviding\Traits\Assert;
+use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
+use Sinso\Webcomponents\DataProviding\Traits\FileReferences;
+use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use TYPO3\CMS\Core\Resource\FileReference;
+
+class Image implements ComponentInterface
+{
+    use Assert;
+    use ContentObjectRendererTrait;
+    use FileReferences;
+
+    public function provide(ComponentRenderingData $componentRenderingData): WebcomponentRenderingData
+    {
+        $record = $componentRenderingData->getContentRecord();
+        $image = $this->loadFileReference($record, 'image');
+
+        // rendering will stop here if no image is found
+        $this->assert($image instanceof FileReference, 'No image found for record ' . $record['uid']);
+
+        $componentRenderingData->setTagName('my-image');
+        $componentRenderingData->setTagProperties(['imageUrl' => $image->getPublicUrl()]);
+    }
+}
+```
 
 ## Render a web component in Fluid
 

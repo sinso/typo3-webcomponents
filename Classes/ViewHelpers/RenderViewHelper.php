@@ -50,10 +50,6 @@ class RenderViewHelper extends AbstractViewHelper
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
-        if (!$componentRenderingData->isRenderable()) {
-            return '';
-        }
-
         $tagName = $componentRenderingData->getTagName();
         $content = $componentRenderingData->getTagContent();
         $properties = $componentRenderingData->getTagProperties();

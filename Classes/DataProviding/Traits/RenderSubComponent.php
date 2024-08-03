@@ -29,10 +29,6 @@ trait RenderSubComponent
             return null;
         }
 
-        if (!$componentRenderingData->isRenderable()) {
-            return null;
-        }
-
         $properties = $componentRenderingData->getTagProperties();
         if ($slot !== null) {
             $properties['slot'] = $slot;
