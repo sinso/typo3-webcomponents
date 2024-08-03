@@ -28,20 +28,17 @@ Generates the output:
 
 You can populate the web component with PHP:
 
-```
-tt_content.tx_myext_mycontentelement = WEBCOMPONENT
-tt_content.tx_myext_mycontentelement.component = Acme\MyExt\Components\MyContentElement
-```
-
 ```php
 <?php
 
 namespace Acme\MyExt\Components;
 
+use Sinso\Webcomponents\ContainerBuilding\Attribute\ComponentForContentElements;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 
+#[ComponentForContentElements(cType: 'tx_myext_my-content-element')]
 class MyContentElement implements ComponentInterface
 {
     use ContentObjectRendererTrait;
@@ -60,6 +57,8 @@ class MyContentElement implements ComponentInterface
 }
 ```
 
+The `#[ComponentForContentElements]` attribute will take care of setting up the necessary TypoScript in the background. 
+
 ## Abort rendering
 
 The component classes can use the `\Sinso\Webcomponents\DataProviding\Traits\Assert` trait to abort rendering, for example if the record is not available:
@@ -69,6 +68,7 @@ The component classes can use the `\Sinso\Webcomponents\DataProviding\Traits\Ass
 
 namespace Acme\MyExt\Components;
 
+use Sinso\Webcomponents\ContainerBuilding\Attribute\ComponentForContentElements;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\Assert;
 use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
@@ -76,6 +76,7 @@ use Sinso\Webcomponents\DataProviding\Traits\FileReferences;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use TYPO3\CMS\Core\Resource\FileReference;
 
+#[ComponentForContentElements(cType: 'image')]
 class Image implements ComponentInterface
 {
     use Assert;
