@@ -12,6 +12,11 @@ services:
       - name: frontend.contentobject
         identifier: 'WEBCOMPONENT'
 
+  Sinso\Webcomponents\ContentObject\WebcomponentContentBlockContentObject:
+    tags:
+      - name: frontend.contentobject
+        identifier: 'WEBCOMPONENT_CONTENTBLOCK'
+
   Sinso\Webcomponents\ViewHelpers\:
     resource: '../Classes/ViewHelpers/*'
     public: true
