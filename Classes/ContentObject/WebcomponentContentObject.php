@@ -47,14 +47,13 @@ class WebcomponentContentObject extends AbstractContentObject
 
         $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $this->cObj, $componentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
-        $eventDispatcher->dispatch($event);
-
-        if (!$componentRenderingData->isRenderable()) {
-            return '';
+        try {
+            $eventDispatcher->dispatch($event);
+            // render with tag builder
+            $markup = $this->renderMarkup($componentRenderingData);
+        } catch (AssertionFailedException $e) {
+            return $e->getRenderingPlaceholder();
         }
-
-        // render with tag builder
-        $markup = $this->renderMarkup($componentRenderingData);
 
         // apply stdWrap
         $markup = $this->cObj->stdWrap($markup, $conf['stdWrap.'] ?? []);
@@ -75,8 +74,9 @@ class WebcomponentContentObject extends AbstractContentObject
                 $componentRenderingData->setTagProperty($key, $this->cObj->cObjGetSingle($value, $conf['properties.'][$key . '.']));
             }
         }
-        if (($conf['tagName'] ?? '') || ($conf['tagName.'] ?? [])) {
-            $componentRenderingData->setTagName($this->cObj->stdWrap($conf['tagName'] ?? '', $conf['tagName.'] ?? []) ?: null);
+        $tagName = $this->cObj->stdWrapValue('tagName', $conf);
+        if (is_string($tagName) && $tagName !== '') {
+            $componentRenderingData->setTagName($tagName);
         }
         return $componentRenderingData;
     }
@@ -84,6 +84,9 @@ class WebcomponentContentObject extends AbstractContentObject
     private function renderMarkup(ComponentRenderingData $componentRenderingData): string
     {
         $tagName = $componentRenderingData->getTagName();
+        if ($tagName === null) {
+            throw new AssertionFailedException('No tag name provided', 1722672898);
+        }
         $content = $componentRenderingData->getTagContent();
         $properties = $componentRenderingData->getTagProperties();
 

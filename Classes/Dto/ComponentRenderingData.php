@@ -89,13 +89,8 @@ class ComponentRenderingData
         return $this->tagName;
     }
 
-    public function setTagName(?string $tagName): void
+    public function setTagName(string $tagName): void
     {
         $this->tagName = $tagName;
-    }
-
-    public function isRenderable(): bool
-    {
-        return $this->tagName !== null;
     }
 }
