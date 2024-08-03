@@ -1,0 +1,8 @@
+"pages"
+,"uid","pid","title","slug","doktype","is_siteroot"
+,"1","0","Root","/","1","1"
+
+"tt_content"
+,"uid","pid","CType","header","colPos","sys_language_uid"
+,"1","1","textmedia","Attributed content element","0","0"
+,"2","1","header","Content element without component","0","0"
