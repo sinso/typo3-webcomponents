@@ -4,10 +4,16 @@ namespace Sinso\Webcomponents\DataProviding\Traits;
 
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\FileRepository;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 trait FileReferences
 {
+    private FileRepository $fileRepository;
+
+    public function injectFileRepository(FileRepository $fileRepository): void
+    {
+        $this->fileRepository = $fileRepository;
+    }
+
     /**
      * @return FileReference[]
      */
@@ -17,8 +23,7 @@ trait FileReferences
         if (empty($localUid)) {
             return [];
         }
-        $fileRepository = GeneralUtility::makeInstance(FileRepository::class);
-        return $fileRepository->findByRelation($localTableName, $fieldName, $localUid);
+        return $this->fileRepository->findByRelation($localTableName, $fieldName, $localUid);
     }
 
     protected function loadFileReference(array $record, string $fieldName, string $localTableName = 'tt_content'): ?FileReference
