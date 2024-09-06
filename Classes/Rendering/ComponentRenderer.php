@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sinso\Webcomponents\DataProviding\Traits;
+namespace Sinso\Webcomponents\Rendering;
 
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
@@ -10,12 +10,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
-trait RenderComponent
+class ComponentRenderer
 {
     /**
      * @param array<string, mixed> $properties
      */
-    protected static function renderComponent(string $tagName, ?string $content, array $properties): string
+    public function renderComponent(string $tagName, ?string $content, array $properties): string
     {
         /** @var TagBuilder $tagBuilder */
         $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
@@ -36,7 +36,7 @@ trait RenderComponent
         return $tagBuilder->render();
     }
 
-    private static function evaluateComponent(ComponentRenderingData $componentRenderingData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
+    public function evaluateComponent(ComponentRenderingData $componentRenderingData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
     {
         if (empty($componentClassName)) {
             return $componentRenderingData;
