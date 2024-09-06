@@ -7,12 +7,19 @@ namespace Sinso\Webcomponents\DataProviding\Traits;
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 trait RenderSubComponent
 {
     use ContentObjectRendererTrait;
-    use RenderComponent;
+
+    private ComponentRenderer $componentRenderer;
+
+    public function injectComponentRenderer(ComponentRenderer $componentRenderer): void
+    {
+        $this->componentRenderer = $componentRenderer;
+    }
 
     protected function renderSubComponent(string $componentClassName, $additionalInputData = [], ?string $slot = null): ?string
     {
@@ -34,7 +41,7 @@ trait RenderSubComponent
             $properties['slot'] = $slot;
         }
 
-        return self::renderComponent(
+        return $this->componentRenderer->renderComponent(
             $componentRenderingData->getTagName(),
             $componentRenderingData->getTagContent(),
             $properties,

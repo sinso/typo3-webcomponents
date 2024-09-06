@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace Sinso\Webcomponents\ContentObject;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
-use Sinso\Webcomponents\DataProviding\Traits\RenderComponent;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
+use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
 
 class WebcomponentContentObject extends AbstractContentObject
 {
-    use RenderComponent;
-
     public function __construct(
+        private readonly ComponentRenderer $componentRenderer,
         private readonly EventDispatcher $eventDispatcher,
     ) {}
 
@@ -45,7 +44,7 @@ class WebcomponentContentObject extends AbstractContentObject
         $componentClassName = $this->cObj?->stdWrapValue('component', $conf, null);
         if (is_string($componentClassName)) {
             try {
-                $componentRenderingData = self::evaluateComponent($componentRenderingData, $componentClassName, $this->cObj);
+                $componentRenderingData = $this->componentRenderer->evaluateComponent($componentRenderingData, $componentClassName, $this->cObj);
             } catch (AssertionFailedException $e) {
                 return $e->getRenderingPlaceholder();
             }
@@ -98,6 +97,6 @@ class WebcomponentContentObject extends AbstractContentObject
         $content = $componentRenderingData->getTagContent();
         $properties = $componentRenderingData->getTagProperties();
 
-        return self::renderComponent($tagName, $content, $properties);
+        return $this->componentRenderer->renderComponent($tagName, $content, $properties);
     }
 }

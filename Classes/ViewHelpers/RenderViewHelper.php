@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Sinso\Webcomponents\ViewHelpers;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
-use Sinso\Webcomponents\DataProviding\Traits\RenderComponent;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
+use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -18,7 +18,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 class RenderViewHelper extends AbstractViewHelper
 {
     use CompileWithRenderStatic;
-    use RenderComponent;
 
     protected $escapeOutput = false;
 
@@ -31,6 +30,8 @@ class RenderViewHelper extends AbstractViewHelper
 
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
     {
+        /** @var ComponentRenderer $componentRenderer */
+        $componentRenderer = GeneralUtility::makeInstance(ComponentRenderer::class);
         $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
         assert(is_array($arguments['inputData']));
         $componentRenderingData->setAdditionalInputData($arguments['inputData']);
@@ -43,7 +44,7 @@ class RenderViewHelper extends AbstractViewHelper
         $componentRenderingData->setContentRecord($contentObjectRenderer->data);
         assert(is_string($arguments['component']));
         try {
-            $componentRenderingData = self::evaluateComponent($componentRenderingData, $arguments['component'], $contentObjectRenderer);
+            $componentRenderingData = $componentRenderer->evaluateComponent($componentRenderingData, $arguments['component'], $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
         }
@@ -59,6 +60,6 @@ class RenderViewHelper extends AbstractViewHelper
         }
         $content = $componentRenderingData->getTagContent();
         $properties = $componentRenderingData->getTagProperties();
-        return self::renderComponent($tagName, $content, $properties);
+        return $componentRenderer->renderComponent($tagName, $content, $properties);
     }
 }
