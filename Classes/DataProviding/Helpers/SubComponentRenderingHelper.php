@@ -2,32 +2,36 @@
 
 declare(strict_types=1);
 
-namespace Sinso\Webcomponents\DataProviding\Traits;
+namespace Sinso\Webcomponents\DataProviding\Helpers;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
+use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-trait RenderSubComponent
+class SubComponentRenderingHelper
 {
-    use ContentObjectRendererTrait;
+    public function __construct(
+        private readonly ComponentRenderer $componentRenderer,
+    ) {}
 
-    private ComponentRenderer $componentRenderer;
-
-    public function injectComponentRenderer(ComponentRenderer $componentRenderer): void
-    {
-        $this->componentRenderer = $componentRenderer;
-    }
-
-    protected function renderSubComponent(string $componentClassName, $additionalInputData = [], ?string $slot = null): ?string
+    /**
+     * @param class-string<ComponentInterface> $componentClassName
+     * @param array<string, mixed> $additionalInputData
+     */
+    public function renderSubComponent(string $componentClassName, array $additionalInputData = [], ?string $slot = null): ?string
     {
         $component = GeneralUtility::makeInstance($componentClassName);
         if (!$component instanceof ComponentInterface) {
             throw new \RuntimeException('Component must implement ComponentInterface');
         }
-        $component->setContentObjectRenderer($this->contentObjectRenderer);
+        /** @var ContentObjectRenderer $contentObjectRenderer */
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->start([]);
+        $component->setContentObjectRenderer($contentObjectRenderer);
         $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
         $componentRenderingData->setAdditionalInputData($additionalInputData);
         try {
@@ -41,8 +45,13 @@ trait RenderSubComponent
             $properties['slot'] = $slot;
         }
 
+        $tagName = $componentRenderingData->getTagName();
+        if ($tagName === null) {
+            return null;
+        }
+
         return $this->componentRenderer->renderComponent(
-            $componentRenderingData->getTagName(),
+            $tagName,
             $componentRenderingData->getTagContent(),
             $properties,
         );
