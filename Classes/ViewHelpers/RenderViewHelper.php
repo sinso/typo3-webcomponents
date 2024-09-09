@@ -26,8 +26,9 @@ class RenderViewHelper extends AbstractViewHelper
     public function initializeArguments(): void
     {
         $this->registerArgument('component', 'string', 'Class name', true);
-        $this->registerArgument('inputData', 'array', 'input data', false, []);
+        $this->registerArgument('contentAs', 'string', 'If set the content will be made available in the additionalData property under the given key');
         $this->registerArgument('contentObjectRenderer', ContentObjectRenderer::class, 'current cObj');
+        $this->registerArgument('inputData', 'array', 'input data', false, []);
     }
 
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
@@ -40,7 +41,7 @@ class RenderViewHelper extends AbstractViewHelper
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
         }
-        $inputData = GeneralUtility::makeInstance(InputData::class, $contentObjectRenderer->data, $contentObjectRenderer->getCurrentTable(), $arguments['inputData']);
+        $inputData = self::gatherInputData($contentObjectRenderer, $arguments, $renderChildrenClosure);
         /** @var class-string<ComponentInterface> $componentClassName */
         $componentClassName = $arguments['component'];
         try {
@@ -48,6 +49,30 @@ class RenderViewHelper extends AbstractViewHelper
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
         }
+
+        return self::renderComponent($contentObjectRenderer, $componentRenderingData);
+    }
+
+    /**
+     * @param array<string, mixed> $arguments
+     */
+    private static function gatherInputData(ContentObjectRenderer $contentObjectRenderer, array $arguments, \Closure $renderChildrenClosure): InputData
+    {
+        if (!empty($arguments['contentAs'])) {
+            $arguments['inputData'][$arguments['contentAs']] = $renderChildrenClosure();
+        }
+        return GeneralUtility::makeInstance(
+            InputData::class,
+            $contentObjectRenderer->data,
+            $contentObjectRenderer->getCurrentTable(),
+            $arguments['inputData']
+        );
+    }
+
+    private static function renderComponent(ContentObjectRenderer $contentObjectRenderer, ComponentRenderingData $componentRenderingData): string
+    {
+        /** @var ComponentRenderer $componentRenderer */
+        $componentRenderer = GeneralUtility::makeInstance(ComponentRenderer::class);
 
         $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $contentObjectRenderer, $componentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
