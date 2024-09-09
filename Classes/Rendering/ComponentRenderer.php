@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Sinso\Webcomponents\Rendering;
 
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
+use Sinso\Webcomponents\DataProviding\Traits\Assert;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\InputData;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 class ComponentRenderer
 {
+    use Assert;
+
     /**
      * @param array<string, mixed> $properties
      */
@@ -36,21 +40,19 @@ class ComponentRenderer
         return $tagBuilder->render();
     }
 
-    public function evaluateComponent(ComponentRenderingData $componentRenderingData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
+    /**
+     * @param class-string<ComponentInterface> $componentClassName
+     */
+    public function evaluateComponent(InputData $inputData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
     {
-        if (empty($componentClassName)) {
-            return $componentRenderingData;
-        }
-        /** @phpstan-ignore-next-line */
+        /** @var ComponentInterface $component */
         $component = GeneralUtility::makeInstance($componentClassName);
-        if (!$component instanceof ComponentInterface) {
-            return $componentRenderingData;
-        }
+        $this->assert($component instanceof ComponentInterface, 'Component must implement ComponentInterface');
         if ($contentObjectRenderer === null) {
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
         }
         $component->setContentObjectRenderer($contentObjectRenderer);
-        return $component->provide($componentRenderingData);
+        return $component->provide($inputData);
     }
 }

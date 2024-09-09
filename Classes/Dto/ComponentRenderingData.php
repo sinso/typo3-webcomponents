@@ -6,52 +6,12 @@ namespace Sinso\Webcomponents\Dto;
 
 class ComponentRenderingData
 {
-    /**
-     * @var array<string, mixed>|null $additionalInputData
-     */
-    private ?array $additionalInputData = null;
-    /**
-     * @var array<string, string|int>|null $contentRecord
-     */
-    private ?array $contentRecord = null;
     private ?string $tagContent = null;
     private ?string $tagName = null;
     /**
      * @var array<string, mixed> $tagProperties
      */
     private array $tagProperties = [];
-
-    /**
-     * @return array<string, mixed>|null
-     */
-    public function getAdditionalInputData(): ?array
-    {
-        return $this->additionalInputData;
-    }
-
-    /**
-     * @param array<string, mixed>|null $additionalInputData
-     */
-    public function setAdditionalInputData(?array $additionalInputData): void
-    {
-        $this->additionalInputData = $additionalInputData;
-    }
-
-    /**
-     * @return array<string, string|int>|null
-     */
-    public function getContentRecord(): ?array
-    {
-        return $this->contentRecord;
-    }
-
-    /**
-     * @param array<string, string|int>|null $contentRecord
-     */
-    public function setContentRecord(?array $contentRecord): void
-    {
-        $this->contentRecord = $contentRecord;
-    }
 
     public function getTagContent(): ?string
     {
