@@ -45,13 +45,8 @@ class SubComponentRenderingHelper
             $properties['slot'] = $slot;
         }
 
-        $tagName = $componentRenderingData->getTagName();
-        if ($tagName === null) {
-            return null;
-        }
-
         return $this->componentRenderer->renderComponent(
-            $tagName,
+            $componentRenderingData->getTagName(),
             $componentRenderingData->getTagContent(),
             $properties,
         );

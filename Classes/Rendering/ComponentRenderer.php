@@ -19,7 +19,7 @@ class ComponentRenderer
     /**
      * @param array<string, mixed> $properties
      */
-    public function renderComponent(string $tagName, ?string $content, array $properties): string
+    public function renderComponent(string $tagName, ?string $content, ?array $properties): string
     {
         /** @var TagBuilder $tagBuilder */
         $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
@@ -27,7 +27,7 @@ class ComponentRenderer
         if (!empty($content)) {
             $tagBuilder->setContent($content);
         }
-        foreach ($properties as $key => $value) {
+        foreach ($properties ?? [] as $key => $value) {
             if ($value === null) {
                 continue;
             }

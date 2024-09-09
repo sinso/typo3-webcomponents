@@ -7,6 +7,7 @@ namespace Sinso\Webcomponents\ContentObject;
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\ComponentRenderingDataInterface;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
@@ -77,7 +78,7 @@ class WebcomponentContentObject extends AbstractContentObject
     /**
      * @param array<string, mixed> $conf
      */
-    private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, array $conf): ComponentRenderingData
+    private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, array $conf): ComponentRenderingDataInterface
     {
         if (is_array($conf['properties.'] ?? null)) {
             foreach ($conf['properties.'] as $key => $value) {
@@ -94,12 +95,9 @@ class WebcomponentContentObject extends AbstractContentObject
         return $componentRenderingData;
     }
 
-    private function renderMarkup(ComponentRenderingData $componentRenderingData): string
+    private function renderMarkup(ComponentRenderingDataInterface $componentRenderingData): string
     {
         $tagName = $componentRenderingData->getTagName();
-        if ($tagName === null) {
-            throw new AssertionFailedException('No tag name provided', 1722672898);
-        }
         $content = $componentRenderingData->getTagContent();
         $properties = $componentRenderingData->getTagProperties();
 

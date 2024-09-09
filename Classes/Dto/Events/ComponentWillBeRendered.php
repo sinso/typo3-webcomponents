@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sinso\Webcomponents\Dto\Events;
 
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\ComponentRenderingDataInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -16,6 +17,6 @@ class ComponentWillBeRendered
 {
     public function __construct(
         public readonly ContentObjectRenderer $contentObjectRenderer,
-        public readonly ComponentRenderingData $componentRenderingData,
+        public readonly ComponentRenderingDataInterface $componentRenderingData,
     ) {}
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\Dto;
 
-class ComponentRenderingData
+use Sinso\Webcomponents\DataProviding\AssertionFailedException;
+
+class ComponentRenderingData implements ComponentRenderingDataInterface, TagPropertiesSettable, TagContentSettable, TagNameSettable
 {
     private ?string $tagContent = null;
     private ?string $tagName = null;
@@ -44,8 +46,11 @@ class ComponentRenderingData
         $this->tagProperties = $tagProperties;
     }
 
-    public function getTagName(): ?string
+    public function getTagName(): string
     {
+        if ($this->tagName === null) {
+            throw new AssertionFailedException('No tag name provided', 1722672898);
+        }
         return $this->tagName;
     }
 

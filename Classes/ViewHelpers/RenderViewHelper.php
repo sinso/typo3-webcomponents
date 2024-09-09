@@ -53,11 +53,12 @@ class RenderViewHelper extends AbstractViewHelper
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 
-        $tagName = $componentRenderingData->getTagName();
-        if ($tagName === null) {
-            $e = new AssertionFailedException('No tag name provided', 1722689282);
+        try {
+            $tagName = $componentRenderingData->getTagName();
+        } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
         }
+
         $content = $componentRenderingData->getTagContent();
         $properties = $componentRenderingData->getTagProperties();
         return $componentRenderer->renderComponent($tagName, $content, $properties);
