@@ -8,6 +8,7 @@ use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -32,10 +33,9 @@ class SubComponentRenderingHelper
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start([]);
         $component->setContentObjectRenderer($contentObjectRenderer);
-        $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
-        $componentRenderingData->setAdditionalInputData($additionalInputData);
+        $inputData = GeneralUtility::makeInstance(InputData::class, [], '', $additionalInputData);
         try {
-            $componentRenderingData = $component->provide($componentRenderingData);
+            $componentRenderingData = $component->provide($inputData);
         } catch (AssertionFailedException) {
             return null;
         }

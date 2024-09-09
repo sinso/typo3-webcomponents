@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Sinso\Webcomponents\ContentObject;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
+use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
+use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -24,10 +26,11 @@ class WebcomponentContentObject extends AbstractContentObject
      */
     public function render($conf = []): string
     {
-        $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
-        if ($this->cObj?->getCurrentTable() === 'tt_content') {
-            $componentRenderingData->setContentRecord($this->cObj->data);
-        }
+        $inputData = GeneralUtility::makeInstance(
+            InputData::class,
+            $this->cObj?->data ?? [],
+            $this->cObj?->getCurrentTable() ?? '',
+        );
         if (is_array($conf['additionalInputData.'] ?? null)) {
             // apply stdWrap to all additionalInputData properties
             foreach ($conf['additionalInputData.'] as $key => $value) {
@@ -39,15 +42,18 @@ class WebcomponentContentObject extends AbstractContentObject
                 $conf['additionalInputData.'][$keyWithoutDot] = $this->cObj?->stdWrapValue($keyWithoutDot, $conf['additionalInputData.']);
                 unset($conf['additionalInputData.'][$key]);
             }
-            $componentRenderingData->setAdditionalInputData($conf['additionalInputData.']);
+            $inputData->additionalData = $conf['additionalInputData.'];
         }
         $componentClassName = $this->cObj?->stdWrapValue('component', $conf, null);
-        if (is_string($componentClassName)) {
-            try {
-                $componentRenderingData = $this->componentRenderer->evaluateComponent($componentRenderingData, $componentClassName, $this->cObj);
-            } catch (AssertionFailedException $e) {
-                return $e->getRenderingPlaceholder();
-            }
+        if (!is_string($componentClassName)) {
+            return '';
+        }
+
+        try {
+            /** @var class-string<ComponentInterface> $componentClassName */
+            $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $this->cObj);
+        } catch (AssertionFailedException $e) {
+            return $e->getRenderingPlaceholder();
         }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 

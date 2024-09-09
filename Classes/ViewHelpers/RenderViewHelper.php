@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Sinso\Webcomponents\ViewHelpers;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
+use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
+use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -32,19 +34,17 @@ class RenderViewHelper extends AbstractViewHelper
     {
         /** @var ComponentRenderer $componentRenderer */
         $componentRenderer = GeneralUtility::makeInstance(ComponentRenderer::class);
-        $componentRenderingData = GeneralUtility::makeInstance(ComponentRenderingData::class);
-        assert(is_array($arguments['inputData']));
-        $componentRenderingData->setAdditionalInputData($arguments['inputData']);
         if ($arguments['contentObjectRenderer'] instanceof ContentObjectRenderer) {
             $contentObjectRenderer = $arguments['contentObjectRenderer'];
         } else {
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
         }
-        $componentRenderingData->setContentRecord($contentObjectRenderer->data);
-        assert(is_string($arguments['component']));
+        $inputData = GeneralUtility::makeInstance(InputData::class, $contentObjectRenderer->data, $contentObjectRenderer->getCurrentTable(), $arguments['inputData']);
+        /** @var class-string<ComponentInterface> $componentClassName */
+        $componentClassName = $arguments['component'];
         try {
-            $componentRenderingData = $componentRenderer->evaluateComponent($componentRenderingData, $arguments['component'], $contentObjectRenderer);
+            $componentRenderingData = $componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
         }
