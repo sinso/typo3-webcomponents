@@ -30,6 +30,9 @@ class RenderViewHelper extends AbstractViewHelper
         $this->registerArgument('contentObjectRenderer', ContentObjectRenderer::class, 'current cObj');
     }
 
+    /**
+     * @param array<string, mixed> $arguments
+     */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
     {
         /** @var ComponentRenderer $componentRenderer */

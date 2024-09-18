@@ -23,7 +23,7 @@ class SubComponentRenderingHelper
      * @param class-string<ComponentInterface> $componentClassName
      * @param array<string, mixed> $additionalInputData
      */
-    public function renderSubComponent(string $componentClassName, array $additionalInputData = [], ?string $slot = null): ?string
+    public function evaluateSubComponent(string $componentClassName, array $additionalInputData = [], ?string $slot = null): ?ComponentRenderingData
     {
         $component = GeneralUtility::makeInstance($componentClassName);
         if (!$component instanceof ComponentInterface) {
@@ -40,10 +40,25 @@ class SubComponentRenderingHelper
             return null;
         }
 
-        $properties = $componentRenderingData->getTagProperties();
         if ($slot !== null) {
-            $properties['slot'] = $slot;
+            $componentRenderingData->setTagProperty('slot', $slot);
         }
+
+        return $componentRenderingData;
+    }
+
+    /**
+     * @param class-string<ComponentInterface> $componentClassName
+     * @param array<string, mixed> $additionalInputData
+     */
+    public function renderSubComponent(string $componentClassName, array $additionalInputData = [], ?string $slot = null): ?string
+    {
+        $componentRenderingData = $this->evaluateSubComponent($componentClassName, $additionalInputData, $slot);
+        if ($componentRenderingData === null) {
+            return null;
+        }
+
+        $properties = $componentRenderingData->getTagProperties();
 
         $tagName = $componentRenderingData->getTagName();
         if ($tagName === null) {
