@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\Dto;
 
-class InputData
+final class InputData
 {
     /**
      * @param array<string, string|integer> $record
