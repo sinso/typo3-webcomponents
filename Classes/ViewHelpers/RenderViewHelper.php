@@ -43,7 +43,10 @@ class RenderViewHelper extends AbstractViewHelper
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
         }
-        $inputData = GeneralUtility::makeInstance(InputData::class, $contentObjectRenderer->data, $contentObjectRenderer->getCurrentTable(), $arguments['inputData']);
+        /** @var ContentObjectRenderer $contentObjectRenderer */
+        /** @var array<string, mixed> $additionalData */
+        $additionalData = $arguments['inputData'];
+        $inputData = new InputData($contentObjectRenderer->data, $contentObjectRenderer->getCurrentTable(), $additionalData);
         /** @var class-string<ComponentInterface> $componentClassName */
         $componentClassName = $arguments['component'];
         try {
