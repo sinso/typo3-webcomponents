@@ -26,8 +26,7 @@ class WebcomponentContentObject extends AbstractContentObject
      */
     public function render($conf = []): string
     {
-        $inputData = GeneralUtility::makeInstance(
-            InputData::class,
+        $inputData = new InputData(
             $this->cObj?->data ?? [],
             $this->cObj?->getCurrentTable() ?? '',
         );

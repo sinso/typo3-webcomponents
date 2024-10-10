@@ -21,19 +21,20 @@ class SubComponentRenderingHelper
 
     /**
      * @param class-string<ComponentInterface> $componentClassName
-     * @param array<string, mixed> $additionalInputData
      */
-    public function evaluateSubComponent(string $componentClassName, array $additionalInputData = [], ?string $slot = null): ?ComponentRenderingData
+    public function evaluateSubComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?ComponentRenderingData
     {
         $component = GeneralUtility::makeInstance($componentClassName);
         if (!$component instanceof ComponentInterface) {
             throw new \RuntimeException('Component must implement ComponentInterface');
         }
+        if ($inputData === null) {
+            $inputData = new InputData();
+        }
         /** @var ContentObjectRenderer $contentObjectRenderer */
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $contentObjectRenderer->start([]);
+        $contentObjectRenderer->start($inputData->record, $inputData->tableName);
         $component->setContentObjectRenderer($contentObjectRenderer);
-        $inputData = GeneralUtility::makeInstance(InputData::class, [], '', $additionalInputData);
         try {
             $componentRenderingData = $component->provide($inputData);
         } catch (AssertionFailedException) {
@@ -49,11 +50,10 @@ class SubComponentRenderingHelper
 
     /**
      * @param class-string<ComponentInterface> $componentClassName
-     * @param array<string, mixed> $additionalInputData
      */
-    public function renderSubComponent(string $componentClassName, array $additionalInputData = [], ?string $slot = null): ?string
+    public function renderSubComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
     {
-        $componentRenderingData = $this->evaluateSubComponent($componentClassName, $additionalInputData, $slot);
+        $componentRenderingData = $this->evaluateSubComponent($componentClassName, $inputData, $slot);
         if ($componentRenderingData === null) {
             return null;
         }
