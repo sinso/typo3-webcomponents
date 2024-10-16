@@ -12,7 +12,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  * Listeners can modify the component rendering data.
  * Listeners can throw an \Sinso\Webcomponents\DataProviding\AssertionFailedException to stop the rendering process.
  */
-class ComponentWillBeRendered
+final class ComponentWillBeRendered
 {
     public function __construct(
         public readonly ContentObjectRenderer $contentObjectRenderer,

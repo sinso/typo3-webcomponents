@@ -55,7 +55,7 @@ class RenderViewHelper extends AbstractViewHelper
             return $e->getRenderingPlaceholder();
         }
 
-        $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $contentObjectRenderer, $componentRenderingData);
+        $event = new ComponentWillBeRendered($contentObjectRenderer, $componentRenderingData);
         $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
         $eventDispatcher->dispatch($event);
 

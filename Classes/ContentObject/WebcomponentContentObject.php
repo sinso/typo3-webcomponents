@@ -11,7 +11,6 @@ use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
 
 class WebcomponentContentObject extends AbstractContentObject
@@ -56,7 +55,7 @@ class WebcomponentContentObject extends AbstractContentObject
         }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
-        $event = GeneralUtility::makeInstance(ComponentWillBeRendered::class, $this->cObj, $componentRenderingData);
+        $event = new ComponentWillBeRendered($this->cObj, $componentRenderingData);
         try {
             $this->eventDispatcher->dispatch($event);
             // render with tag builder
