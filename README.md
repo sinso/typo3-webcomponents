@@ -41,19 +41,21 @@ namespace Acme\MyExt\Components;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\InputData;
 
 class MyContentElement implements ComponentInterface
 {
     use ContentObjectRendererTrait;
 
-    public function provide(ComponentRenderingData $componentRenderingData): WebcomponentRenderingData
+    public function provide(InputData $inputData): ComponentRenderingData
     {
-        $record = $componentRenderingData->getContentRecord();
+        $record = $inputData->record;
         $properties = [
             'title' => $record['header'],
             'greeting' => 'Hello World!',
         ];
 
+        $componentRenderingData = new ComponentRenderingData();
         $componentRenderingData->setTagName('my-web-component');
         $componentRenderingData->setTagProperties($properties);
     }
@@ -74,6 +76,7 @@ use Sinso\Webcomponents\DataProviding\Traits\Assert;
 use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\DataProviding\Traits\FileReferences;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\InputData;
 use TYPO3\CMS\Core\Resource\FileReference;
 
 class Image implements ComponentInterface
@@ -82,14 +85,15 @@ class Image implements ComponentInterface
     use ContentObjectRendererTrait;
     use FileReferences;
 
-    public function provide(ComponentRenderingData $componentRenderingData): WebcomponentRenderingData
+    public function provide(InputData $inputData): ComponentRenderingData
     {
-        $record = $componentRenderingData->getContentRecord();
+        $record = $inputData->record;
         $image = $this->loadFileReference($record, 'image');
 
         // rendering will stop here if no image is found
         $this->assert($image instanceof FileReference, 'No image found for record ' . $record['uid']);
 
+        $componentRenderingData = new ComponentRenderingData();
         $componentRenderingData->setTagName('my-image');
         $componentRenderingData->setTagProperties(['imageUrl' => $image->getPublicUrl()]);
     }
