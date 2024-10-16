@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\Dto;
 
-class ComponentRenderingData
+final class ComponentRenderingData
 {
     private ?string $tagContent = null;
     private ?string $tagName = null;
