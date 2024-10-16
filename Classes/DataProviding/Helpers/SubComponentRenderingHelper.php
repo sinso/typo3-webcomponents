@@ -26,7 +26,7 @@ class SubComponentRenderingHelper
     {
         $component = GeneralUtility::makeInstance($componentClassName);
         if (!$component instanceof ComponentInterface) {
-            throw new \RuntimeException('Component must implement ComponentInterface');
+            throw new \RuntimeException('Component must implement ComponentInterface', 1729064021);
         }
         if ($inputData === null) {
             $inputData = new InputData();

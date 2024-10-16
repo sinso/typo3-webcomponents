@@ -15,6 +15,6 @@ trait Assert
         if ($condition) {
             return;
         }
-        throw new AssertionFailedException('Webcomponent ' . self::class . ' skipped rendering because of failed assertion: ' . $message);
+        throw new AssertionFailedException('Webcomponent ' . self::class . ' skipped rendering because of failed assertion: ' . $message, 1729064010);
     }
 }
