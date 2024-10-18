@@ -13,7 +13,7 @@ use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-class SubComponentRenderingHelper
+class ComponentRenderingHelper
 {
     public function __construct(
         private readonly ComponentRenderer $componentRenderer,
