@@ -22,7 +22,7 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function evaluateSubComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?ComponentRenderingData
+    public function evaluateComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?ComponentRenderingData
     {
         $component = GeneralUtility::makeInstance($componentClassName);
         if (!$component instanceof ComponentInterface) {
@@ -51,7 +51,7 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function renderSubComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
+    public function renderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
     {
         $componentRenderingData = $this->evaluateSubComponent($componentClassName, $inputData, $slot);
         if ($componentRenderingData === null) {
