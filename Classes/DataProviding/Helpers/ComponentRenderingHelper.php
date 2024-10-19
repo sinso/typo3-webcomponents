@@ -53,7 +53,7 @@ class ComponentRenderingHelper
      */
     public function renderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
     {
-        $componentRenderingData = $this->evaluateSubComponent($componentClassName, $inputData, $slot);
+        $componentRenderingData = $this->evaluateComponent($componentClassName, $inputData, $slot);
         if ($componentRenderingData === null) {
             return null;
         }
