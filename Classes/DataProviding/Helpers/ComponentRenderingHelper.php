@@ -6,6 +6,7 @@ namespace Sinso\Webcomponents\DataProviding\Helpers;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
+use Sinso\Webcomponents\DataProviding\Traits\Assert;
 use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
@@ -15,6 +16,8 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ComponentRenderingHelper
 {
+    use Assert;
+
     public function __construct(
         private readonly ComponentRenderer $componentRenderer,
     ) {}
@@ -22,12 +25,10 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function evaluateComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?ComponentRenderingData
+    public function evaluateComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ComponentRenderingData
     {
         $component = GeneralUtility::makeInstance($componentClassName);
-        if (!$component instanceof ComponentInterface) {
-            throw new \RuntimeException('Component must implement ComponentInterface', 1729064021);
-        }
+        $this->assert($component instanceof ComponentInterface, 'Component must implement ComponentInterface');
         if ($inputData === null) {
             $inputData = new InputData();
         }
@@ -35,11 +36,7 @@ class ComponentRenderingHelper
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start($inputData->record, $inputData->tableName);
         $component->setContentObjectRenderer($contentObjectRenderer);
-        try {
-            $componentRenderingData = $component->provide($inputData);
-        } catch (AssertionFailedException) {
-            return null;
-        }
+        $componentRenderingData = $component->provide($inputData);
 
         if ($slot !== null) {
             $componentRenderingData->setTagProperty('slot', $slot);
@@ -51,19 +48,13 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function renderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
+    public function renderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): string
     {
         $componentRenderingData = $this->evaluateComponent($componentClassName, $inputData, $slot);
-        if ($componentRenderingData === null) {
-            return null;
-        }
-
         $properties = $componentRenderingData->getTagProperties();
 
         $tagName = $componentRenderingData->getTagName();
-        if ($tagName === null) {
-            return null;
-        }
+        $this->assert(!empty($tagName), 'Tag name must not be empty');
 
         return $this->componentRenderer->renderComponent(
             $tagName,
