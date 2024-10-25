@@ -10,6 +10,7 @@ use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
+use Sinso\Webcomponents\Ssr\SsrClient;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
 
@@ -18,6 +19,7 @@ class WebcomponentContentObject extends AbstractContentObject
     public function __construct(
         private readonly ComponentRenderer $componentRenderer,
         private readonly EventDispatcher $eventDispatcher,
+        private readonly SsrClient $ssrClient,
     ) {}
 
     /**
@@ -62,6 +64,11 @@ class WebcomponentContentObject extends AbstractContentObject
             $markup = $this->renderMarkup($componentRenderingData);
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
+        }
+
+        $enableSsr = (bool)$this->cObj?->stdWrapValue('enableSsr', $conf);
+        if ($enableSsr === true) {
+            $markup = $this->ssrClient->render($markup);
         }
 
         // apply stdWrap
