@@ -10,6 +10,7 @@ use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
+use Sinso\Webcomponents\Ssr\SsrClient;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
 
 class WebcomponentContentObject extends AbstractContentObject
@@ -17,6 +18,7 @@ class WebcomponentContentObject extends AbstractContentObject
     public function __construct(
         private readonly ComponentRenderer $componentRenderer,
         private readonly LoggerInterface $logger,
+        private readonly SsrClient $ssrClient,
     ) {}
 
     /**
@@ -59,6 +61,11 @@ class WebcomponentContentObject extends AbstractContentObject
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
         $markup = $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
+
+        $enableSsr = (bool)$this->cObj?->stdWrapValue('enableSsr', $conf);
+        if ($enableSsr === true) {
+            $markup = $this->ssrClient->render($markup);
+        }
 
         // apply stdWrap
         if (is_array($conf['stdWrap.'] ?? null)) {
