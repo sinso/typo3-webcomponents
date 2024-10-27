@@ -29,6 +29,8 @@ class WebcomponentContentObject extends AbstractContentObject
             $this->cObj?->data ?? [],
             $this->cObj?->getCurrentTable() ?? '',
         );
+
+        $contentObjectRenderer = $this->getContentObjectRenderer();
         if (is_array($conf['additionalInputData.'] ?? null)) {
             // apply stdWrap to all additionalInputData properties
             foreach ($conf['additionalInputData.'] as $key => $value) {
@@ -37,25 +39,25 @@ class WebcomponentContentObject extends AbstractContentObject
                     continue;
                 }
                 $keyWithoutDot = substr($key, 0, -1);
-                $conf['additionalInputData.'][$keyWithoutDot] = $this->cObj?->stdWrapValue($keyWithoutDot, $conf['additionalInputData.']);
+                $conf['additionalInputData.'][$keyWithoutDot] = $contentObjectRenderer->stdWrapValue($keyWithoutDot, $conf['additionalInputData.']);
                 unset($conf['additionalInputData.'][$key]);
             }
             $inputData->additionalData = $conf['additionalInputData.'];
         }
-        $componentClassName = $this->cObj?->stdWrapValue('component', $conf, null);
+        $componentClassName = $contentObjectRenderer->stdWrapValue('component', $conf, null);
         if (!is_string($componentClassName)) {
             return '';
         }
 
         try {
             /** @var class-string<ComponentInterface> $componentClassName */
-            $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $this->cObj);
+            $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
             return $e->getRenderingPlaceholder();
         }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
-        $event = new ComponentWillBeRendered($this->cObj, $componentRenderingData);
+        $event = new ComponentWillBeRendered($contentObjectRenderer, $componentRenderingData);
         try {
             $this->eventDispatcher->dispatch($event);
             // render with tag builder
