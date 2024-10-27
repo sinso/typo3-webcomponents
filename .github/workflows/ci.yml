@@ -21,6 +21,7 @@ jobs:
       - uses: php-actions/composer@v6
         with:
           args: --ignore-platform-reqs
+          php_version: "8.1"
 
       - name: PHP CS Fixer Static Analysis
         run: composer php-cs-fixer
