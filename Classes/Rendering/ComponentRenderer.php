@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\Rendering;
 
+use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\Assert;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
@@ -16,28 +19,15 @@ class ComponentRenderer
 {
     use Assert;
 
-    /**
-     * @param array<string, mixed> $properties
-     */
-    public function renderComponent(string $tagName, ?string $content, array $properties): string
+    public function __construct(
+        private readonly EventDispatcher $eventDispatcher,
+    ) {}
+
+    public function renderComponent(ComponentRenderingData $componentRenderingData, ContentObjectRenderer $contentObjectRenderer): string
     {
-        /** @var TagBuilder $tagBuilder */
-        $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
-        $tagBuilder->setTagName($tagName);
-        if (!empty($content)) {
-            $tagBuilder->setContent($content);
-        }
-        foreach ($properties as $key => $value) {
-            if ($value === null) {
-                continue;
-            }
-            if (!is_scalar($value)) {
-                $value = json_encode($value);
-            }
-            $tagBuilder->addAttribute($key, (string)$value);
-        }
-        $tagBuilder->forceClosingTag(true);
-        return $tagBuilder->render();
+        $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer);
+        $this->eventDispatcher->dispatch($event);
+        return $this->renderMarkup($componentRenderingData);
     }
 
     /**
@@ -54,5 +44,30 @@ class ComponentRenderer
         }
         $component->setContentObjectRenderer($contentObjectRenderer);
         return $component->provide($inputData);
+    }
+
+    private function renderMarkup(ComponentRenderingData $componentRenderingData): string
+    {
+        if ($componentRenderingData->getTagName() === null) {
+            throw new AssertionFailedException('No tag name provided', 1730800497);
+        }
+
+        /** @var TagBuilder $tagBuilder */
+        $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
+        $tagBuilder->setTagName($componentRenderingData->getTagName());
+        if (!empty($componentRenderingData->getTagContent())) {
+            $tagBuilder->setContent($componentRenderingData->getTagContent());
+        }
+        foreach ($componentRenderingData->getTagProperties() as $key => $value) {
+            if ($value === null) {
+                continue;
+            }
+            if (!is_scalar($value)) {
+                $value = json_encode($value);
+            }
+            $tagBuilder->addAttribute($key, (string)$value);
+        }
+        $tagBuilder->forceClosingTag(true);
+        return $tagBuilder->render();
     }
 }

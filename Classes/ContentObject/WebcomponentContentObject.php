@@ -7,17 +7,14 @@ namespace Sinso\Webcomponents\ContentObject;
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
-use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
 
 class WebcomponentContentObject extends AbstractContentObject
 {
     public function __construct(
         private readonly ComponentRenderer $componentRenderer,
-        private readonly EventDispatcher $eventDispatcher,
     ) {}
 
     /**
@@ -57,14 +54,7 @@ class WebcomponentContentObject extends AbstractContentObject
         }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
-        $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer);
-        try {
-            $this->eventDispatcher->dispatch($event);
-            // render with tag builder
-            $markup = $this->renderMarkup($componentRenderingData);
-        } catch (AssertionFailedException $e) {
-            return $e->getRenderingPlaceholder();
-        }
+        $markup = $this->componentRenderer->renderComponent($componentRenderingData, $this->cObj);
 
         // apply stdWrap
         if (is_array($conf['stdWrap.'] ?? null)) {
@@ -92,17 +82,5 @@ class WebcomponentContentObject extends AbstractContentObject
             $componentRenderingData->setTagName($tagName);
         }
         return $componentRenderingData;
-    }
-
-    private function renderMarkup(ComponentRenderingData $componentRenderingData): string
-    {
-        $tagName = $componentRenderingData->getTagName();
-        if ($tagName === null) {
-            throw new AssertionFailedException('No tag name provided', 1722672898);
-        }
-        $content = $componentRenderingData->getTagContent();
-        $properties = $componentRenderingData->getTagProperties();
-
-        return $this->componentRenderer->renderComponent($tagName, $content, $properties);
     }
 }

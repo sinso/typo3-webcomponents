@@ -12,6 +12,10 @@ services:
       - name: frontend.contentobject
         identifier: 'WEBCOMPONENT'
 
+  Sinso\Webcomponents\Rendering\:
+    resource: '../Classes/Rendering/*'
+    public: true
+
   Sinso\Webcomponents\ViewHelpers\:
     resource: '../Classes/ViewHelpers/*'
     public: true
