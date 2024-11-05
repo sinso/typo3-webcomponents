@@ -57,7 +57,7 @@ class WebcomponentContentObject extends AbstractContentObject
         }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
-        $event = new ComponentWillBeRendered($contentObjectRenderer, $componentRenderingData);
+        $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer);
         try {
             $this->eventDispatcher->dispatch($event);
             // render with tag builder
