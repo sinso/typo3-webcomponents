@@ -6,11 +6,8 @@ namespace Sinso\Webcomponents\ViewHelpers;
 
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
-use Sinso\Webcomponents\Dto\ComponentRenderingData;
-use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -55,17 +52,6 @@ class RenderViewHelper extends AbstractViewHelper
             return $e->getRenderingPlaceholder();
         }
 
-        $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer);
-        $eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
-        $eventDispatcher->dispatch($event);
-
-        $tagName = $componentRenderingData->getTagName();
-        if ($tagName === null) {
-            $e = new AssertionFailedException('No tag name provided', 1722689282);
-            return $e->getRenderingPlaceholder();
-        }
-        $content = $componentRenderingData->getTagContent();
-        $properties = $componentRenderingData->getTagProperties();
-        return $componentRenderer->renderComponent($tagName, $content, $properties);
+        return $componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
     }
 }

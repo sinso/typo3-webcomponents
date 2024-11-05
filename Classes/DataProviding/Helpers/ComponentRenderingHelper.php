@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\DataProviding\Helpers;
 
-use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
-use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
@@ -22,7 +20,7 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function evaluateComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?ComponentRenderingData
+    public function evaluateComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ComponentRenderingData
     {
         $component = GeneralUtility::makeInstance($componentClassName);
         if (!$component instanceof ComponentInterface) {
@@ -35,11 +33,7 @@ class ComponentRenderingHelper
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start($inputData->record, $inputData->tableName);
         $component->setContentObjectRenderer($contentObjectRenderer);
-        try {
-            $componentRenderingData = $component->provide($inputData);
-        } catch (AssertionFailedException) {
-            return null;
-        }
+        $componentRenderingData = $component->provide($inputData);
 
         if ($slot !== null) {
             $componentRenderingData->setTagProperty('slot', $slot);
@@ -51,24 +45,15 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function evaluateAndRenderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
+    public function evaluateAndRenderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): string
     {
+        if ($inputData === null) {
+            $inputData = new InputData();
+        }
         $componentRenderingData = $this->evaluateComponent($componentClassName, $inputData, $slot);
-        if ($componentRenderingData === null) {
-            return null;
-        }
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->start($inputData->record, $inputData->tableName);
 
-        $properties = $componentRenderingData->getTagProperties();
-
-        $tagName = $componentRenderingData->getTagName();
-        if ($tagName === null) {
-            return null;
-        }
-
-        return $this->componentRenderer->renderComponent(
-            $tagName,
-            $componentRenderingData->getTagContent(),
-            $properties,
-        );
+        return $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
     }
 }
