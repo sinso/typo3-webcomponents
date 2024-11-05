@@ -51,7 +51,7 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function renderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
+    public function evaluateAndRenderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ?string
     {
         $componentRenderingData = $this->evaluateComponent($componentClassName, $inputData, $slot);
         if ($componentRenderingData === null) {
