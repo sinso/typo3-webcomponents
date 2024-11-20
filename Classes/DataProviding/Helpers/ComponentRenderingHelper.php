@@ -22,18 +22,14 @@ class ComponentRenderingHelper
      */
     public function evaluateComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): ComponentRenderingData
     {
-        $component = GeneralUtility::makeInstance($componentClassName);
-        if (!$component instanceof ComponentInterface) {
-            throw new \RuntimeException('Component must implement ComponentInterface', 1729064021);
-        }
         if ($inputData === null) {
             $inputData = new InputData();
         }
         /** @var ContentObjectRenderer $contentObjectRenderer */
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start($inputData->record, $inputData->tableName);
-        $component->setContentObjectRenderer($contentObjectRenderer);
-        $componentRenderingData = $component->provide($inputData);
+
+        $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
 
         if ($slot !== null) {
             $componentRenderingData->setTagProperty('slot', $slot);
