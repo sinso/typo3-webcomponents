@@ -11,6 +11,7 @@ use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
@@ -43,7 +44,11 @@ class ComponentRenderer
             $contentObjectRenderer->start([]);
         }
         $component->setContentObjectRenderer($contentObjectRenderer);
-        return $component->provide($inputData);
+        $componentRenderingData = $component->provide($inputData);
+        $componentRenderingData->setTagProperties(
+            ArrayUtility::removeNullValuesRecursive($componentRenderingData->getTagProperties())
+        );
+        return $componentRenderingData;
     }
 
     private function renderMarkup(ComponentRenderingData $componentRenderingData): string
@@ -59,9 +64,6 @@ class ComponentRenderer
             $tagBuilder->setContent($componentRenderingData->getTagContent());
         }
         foreach ($componentRenderingData->getTagProperties() as $key => $value) {
-            if ($value === null) {
-                continue;
-            }
             if (!is_scalar($value)) {
                 $value = json_encode($value);
             }
