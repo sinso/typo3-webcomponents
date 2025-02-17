@@ -1,13 +1,15 @@
 <?php
 
-namespace Sinso\Webcomponents\DataProviding\Traits;
+declare(strict_types=1);
+
+namespace Sinso\Webcomponents\DataProviding\Helpers;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
-trait ResourceUri
+class ResourceUriHelper
 {
-    protected function loadResourceUri(string $extensionName, string $path): string
+    public function loadResourceUri(string $extensionName, string $path): string
     {
         $uri = sprintf(
             'EXT:%s/Resources/Public/%s',
