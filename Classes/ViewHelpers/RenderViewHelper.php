@@ -8,6 +8,7 @@ use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -49,6 +50,10 @@ class RenderViewHelper extends AbstractViewHelper
         try {
             $componentRenderingData = $componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
+            /** @var LogManager $logManager */
+            $logManager = GeneralUtility::makeInstance(LogManager::class);
+            $logger = $logManager->getLogger(__CLASS__);
+            $logger->warning('Component evaluation failed', ['exception' => $e]);
             return $e->getRenderingPlaceholder();
         }
 
