@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\ContentObject;
 
+use Psr\Log\LoggerInterface;
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
@@ -15,6 +16,7 @@ class WebcomponentContentObject extends AbstractContentObject
 {
     public function __construct(
         private readonly ComponentRenderer $componentRenderer,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -43,6 +45,7 @@ class WebcomponentContentObject extends AbstractContentObject
         }
         $componentClassName = $contentObjectRenderer->stdWrapValue('component', $conf, null);
         if (!is_string($componentClassName)) {
+            $this->logger->warning('No component class name provided', ['conf' => $conf, 'data' => $inputData->record]);
             return '';
         }
 
@@ -50,11 +53,12 @@ class WebcomponentContentObject extends AbstractContentObject
             /** @var class-string<ComponentInterface> $componentClassName */
             $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
+            $this->logger->warning('Component evaluation failed', ['conf' => $conf, 'data' => $inputData->record, 'exception' => $e]);
             return $e->getRenderingPlaceholder();
         }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
-        $markup = $this->componentRenderer->renderComponent($componentRenderingData, $this->cObj);
+        $markup = $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
 
         // apply stdWrap
         if (is_array($conf['stdWrap.'] ?? null)) {
