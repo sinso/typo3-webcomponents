@@ -1,7 +1,7 @@
 {
 	"name": "sinso/webcomponents",
 	"type": "typo3-cms-extension",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Render Web Components",
 	"extra": {
 		"typo3/cms": {
