@@ -26,6 +26,8 @@ class RenderViewHelper extends AbstractViewHelper
         $this->registerArgument('component', 'string', 'Class name', true);
         $this->registerArgument('inputData', 'array', 'input data', false, []);
         $this->registerArgument('contentObjectRenderer', ContentObjectRenderer::class, 'current cObj');
+        $this->registerArgument('record', 'array', 'current db record', false, []);
+        $this->registerArgument('table', 'string', 'current db table', false, '');
     }
 
     /**
@@ -39,7 +41,11 @@ class RenderViewHelper extends AbstractViewHelper
             $contentObjectRenderer = $arguments['contentObjectRenderer'];
         } else {
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $contentObjectRenderer->start([]);
+            /** @var array<string, mixed> $record */
+            $record = $arguments['record'];
+            /** @var string $table */
+            $table = $arguments['table'];
+            $contentObjectRenderer->start($record, $table);
         }
         /** @var ContentObjectRenderer $contentObjectRenderer */
         /** @var array<string, mixed> $additionalData */
