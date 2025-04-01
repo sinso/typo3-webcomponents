@@ -12,12 +12,29 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 final class ComponentEvaluated
 {
     /**
+     * @deprecated Do not access this property directly anymore, but use the getter and setter methods.
+     */
+    public ComponentRenderingData $componentRenderingData;
+
+    /**
      * @param class-string<ComponentInterface> $componentClassName
      */
     public function __construct(
-        public readonly ComponentRenderingData $componentRenderingData,
+        ComponentRenderingData $componentRenderingData,
         public readonly ContentObjectRenderer $contentObjectRenderer,
         public readonly InputData $inputData,
         public readonly string $componentClassName,
-    ) {}
+    ) {
+        $this->componentRenderingData = $componentRenderingData;
+    }
+
+    public function getComponentRenderingData(): ComponentRenderingData
+    {
+        return $this->componentRenderingData;
+    }
+
+    public function setComponentRenderingData(ComponentRenderingData $componentRenderingData): void
+    {
+        $this->componentRenderingData = $componentRenderingData;
+    }
 }

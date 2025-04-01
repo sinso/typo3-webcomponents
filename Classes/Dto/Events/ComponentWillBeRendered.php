@@ -14,8 +14,25 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
  */
 final class ComponentWillBeRendered
 {
+    /**
+     * @deprecated Do not access this property directly anymore, but use the getter and setter methods.
+     */
+    public ComponentRenderingData $componentRenderingData;
+
     public function __construct(
-        public readonly ComponentRenderingData $componentRenderingData,
+        ComponentRenderingData $componentRenderingData,
         public readonly ContentObjectRenderer $contentObjectRenderer,
-    ) {}
+    ) {
+        $this->componentRenderingData = $componentRenderingData;
+    }
+
+    public function getComponentRenderingData(): ComponentRenderingData
+    {
+        return $this->componentRenderingData;
+    }
+
+    public function setComponentRenderingData(ComponentRenderingData $componentRenderingData): void
+    {
+        $this->componentRenderingData = $componentRenderingData;
+    }
 }

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\Dto;
 
-/**
- * todo: this class should be immutable and should offer ->withTagName(), ->withTagProperties(), etc. methods
- */
 final class ComponentRenderingData
 {
     private ?string $tagContent = null;
@@ -21,9 +18,20 @@ final class ComponentRenderingData
         return $this->tagContent;
     }
 
+    /**
+     * @deprecated Use withTagContent() instead.
+     */
     public function setTagContent(?string $tagContent): void
     {
+        trigger_error('Setting tag content is deprecated. Use withTagContent() instead.', E_USER_DEPRECATED);
         $this->tagContent = $tagContent;
+    }
+
+    public function withTagContent(?string $tagContent): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->tagContent = $tagContent;
+        return $clonedObject;
     }
 
     /**
@@ -34,17 +42,41 @@ final class ComponentRenderingData
         return $this->tagProperties;
     }
 
+    /**
+     * @deprecated Use withTagProperty() instead.
+     */
     public function setTagProperty(string $key, mixed $value): void
     {
+        trigger_error('Setting tag property is deprecated. Use withTagProperty() instead.', E_USER_DEPRECATED);
         $this->tagProperties[$key] = $value;
+    }
+
+    public function withTagProperty(string $key, mixed $value): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->tagProperties[$key] = $value;
+        return $clonedObject;
+    }
+
+    /**
+     * @deprecated Use withTagProperties() instead.
+     *
+     * @param array<string, mixed> $tagProperties
+     */
+    public function setTagProperties(array $tagProperties): void
+    {
+        trigger_error('Setting tag properties is deprecated. Use withTagProperties() instead.', E_USER_DEPRECATED);
+        $this->tagProperties = $tagProperties;
     }
 
     /**
      * @param array<string, mixed> $tagProperties
      */
-    public function setTagProperties(array $tagProperties): void
+    public function withTagProperties(array $tagProperties): self
     {
-        $this->tagProperties = $tagProperties;
+        $clonedObject = clone $this;
+        $clonedObject->tagProperties = $tagProperties;
+        return $clonedObject;
     }
 
     public function getTagName(): ?string
@@ -52,8 +84,19 @@ final class ComponentRenderingData
         return $this->tagName;
     }
 
+    /**
+     * @deprecated Use withTagName() instead.
+     */
     public function setTagName(string $tagName): void
     {
+        trigger_error('Setting tag name is deprecated. Use withTagName() instead.', E_USER_DEPRECATED);
         $this->tagName = $tagName;
+    }
+
+    public function withTagName(string $tagName): self
+    {
+        $clonedObject = clone $this;
+        $clonedObject->tagName = $tagName;
+        return $clonedObject;
     }
 }

@@ -55,9 +55,9 @@ class MyContentElement implements ComponentInterface
             'greeting' => 'Hello World!',
         ];
 
-        $componentRenderingData = new ComponentRenderingData();
-        $componentRenderingData->setTagName('my-web-component');
-        $componentRenderingData->setTagProperties($properties);
+        return (new ComponentRenderingData())
+            ->withTagName('my-web-component')
+            ->withTagProperties($properties);
     }
 }
 ```
@@ -93,9 +93,9 @@ class Image implements ComponentInterface
         // rendering will stop here if no image is found
         $this->assert($image instanceof FileReference, 'No image found for record ' . $record['uid']);
 
-        $componentRenderingData = new ComponentRenderingData();
-        $componentRenderingData->setTagName('my-image');
-        $componentRenderingData->setTagProperties(['imageUrl' => $image->getPublicUrl()]);
+        return (new ComponentRenderingData())
+            ->withTagName('my-image')
+            ->withTagProperties(['imageUrl' => $image->getPublicUrl()]);
     }
 }
 ```

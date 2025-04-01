@@ -78,12 +78,12 @@ class WebcomponentContentObject extends AbstractContentObject
                 if (is_array($value)) {
                     continue;
                 }
-                $componentRenderingData->setTagProperty($key, $this->cObj?->cObjGetSingle($value, $conf['properties.'][$key . '.']));
+                $componentRenderingData = $componentRenderingData->withTagProperty($key, $this->cObj?->cObjGetSingle($value, $conf['properties.'][$key . '.']));
             }
         }
         $tagName = $this->cObj?->stdWrapValue('tagName', $conf);
         if (is_string($tagName) && $tagName !== '') {
-            $componentRenderingData->setTagName($tagName);
+            return $componentRenderingData->withTagName($tagName);
         }
         return $componentRenderingData;
     }
