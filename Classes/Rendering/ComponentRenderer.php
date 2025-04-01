@@ -29,7 +29,7 @@ class ComponentRenderer
     {
         $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer);
         $this->eventDispatcher->dispatch($event);
-        return $this->renderMarkup($componentRenderingData);
+        return $this->renderMarkup($event->getComponentRenderingData());
     }
 
     /**
@@ -46,14 +46,14 @@ class ComponentRenderer
         }
         $component->setContentObjectRenderer($contentObjectRenderer);
         $componentRenderingData = $component->provide($inputData);
-        $componentRenderingData->setTagProperties(
+        $componentRenderingData = $componentRenderingData->withTagProperties(
             ArrayUtility::removeNullValuesRecursive($componentRenderingData->getTagProperties())
         );
 
         $event = new ComponentEvaluated($componentRenderingData, $contentObjectRenderer, $inputData, $componentClassName);
         $this->eventDispatcher->dispatch($event);
 
-        return $event->componentRenderingData;
+        return $event->getComponentRenderingData();
     }
 
     private function renderMarkup(ComponentRenderingData $componentRenderingData): string

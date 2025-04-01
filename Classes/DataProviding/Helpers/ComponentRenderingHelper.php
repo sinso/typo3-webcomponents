@@ -32,7 +32,7 @@ class ComponentRenderingHelper
         $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
 
         if ($slot !== null) {
-            $componentRenderingData->setTagProperty('slot', $slot);
+            return $componentRenderingData->withTagProperty('slot', $slot);
         }
 
         return $componentRenderingData;
