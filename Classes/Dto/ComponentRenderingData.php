@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\Dto;
 
+/**
+ * todo: this class should be immutable and should offer ->withTagName(), ->withTagProperties(), etc. methods
+ */
 final class ComponentRenderingData
 {
     private ?string $tagContent = null;
