@@ -8,9 +8,10 @@ use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\Assert;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
+use Sinso\Webcomponents\Dto\Events\ComponentEvaluated;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -21,7 +22,7 @@ class ComponentRenderer
     use Assert;
 
     public function __construct(
-        private readonly EventDispatcher $eventDispatcher,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
     public function renderComponent(ComponentRenderingData $componentRenderingData, ContentObjectRenderer $contentObjectRenderer): string
@@ -48,7 +49,11 @@ class ComponentRenderer
         $componentRenderingData->setTagProperties(
             ArrayUtility::removeNullValuesRecursive($componentRenderingData->getTagProperties())
         );
-        return $componentRenderingData;
+
+        $event = new ComponentEvaluated($componentRenderingData, $contentObjectRenderer, $inputData, $componentClassName);
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->componentRenderingData;
     }
 
     private function renderMarkup(ComponentRenderingData $componentRenderingData): string
