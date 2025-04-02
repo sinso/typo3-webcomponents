@@ -44,7 +44,9 @@ class ComponentRenderer
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
         }
-        $component->setContentObjectRenderer($contentObjectRenderer);
+        if (method_exists($component, 'setContentObjectRenderer')) {
+            $component->setContentObjectRenderer($contentObjectRenderer);
+        }
         $componentRenderingData = $component->provide($inputData);
         $componentRenderingData = $componentRenderingData->withTagProperties(
             ArrayUtility::removeNullValuesRecursive($componentRenderingData->getTagProperties())

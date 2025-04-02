@@ -9,6 +9,4 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 interface ComponentInterface
 {
     public function provide(InputData $inputData): ComponentRenderingData;
-
-    public function setContentObjectRenderer(ContentObjectRenderer $contentObjectRenderer): void;
 }
