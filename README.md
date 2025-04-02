@@ -39,14 +39,11 @@ tt_content.tx_myext_mycontentelement.component = Acme\MyExt\Components\MyContent
 namespace Acme\MyExt\Components;
 
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
-use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
 
 class MyContentElement implements ComponentInterface
 {
-    use ContentObjectRendererTrait;
-
     public function provide(InputData $inputData): ComponentRenderingData
     {
         $record = $inputData->record;
@@ -73,7 +70,6 @@ namespace Acme\MyExt\Components;
 
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\Assert;
-use Sinso\Webcomponents\DataProviding\Traits\ContentObjectRendererTrait;
 use Sinso\Webcomponents\DataProviding\Traits\FileReferences;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
@@ -82,7 +78,6 @@ use TYPO3\CMS\Core\Resource\FileReference;
 class Image implements ComponentInterface
 {
     use Assert;
-    use ContentObjectRendererTrait;
     use FileReferences;
 
     public function provide(InputData $inputData): ComponentRenderingData
