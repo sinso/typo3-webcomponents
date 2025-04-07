@@ -21,6 +21,20 @@ class LinkHelper
      */
     public function createLinkResult(string|int $linkParameter): LinkResultInterface
     {
-        return $this->linkFactory->create('', ['parameter' => $linkParameter], $this->contentObjectRenderer);
+        $linkResult = $this->linkFactory->create('', ['parameter' => $linkParameter], $this->contentObjectRenderer);
+        if ($linkResult->getLinkText() !== null && $this->htmlSanitizationIsActive()) {
+            // HTML sanitization encodes the link text, so we need to decode it to pass clean data to web components
+            $linkResult = $linkResult->withLinkText(html_entity_decode((string)$linkResult->getLinkText()));
+        }
+        return $linkResult;
+    }
+
+    private function htmlSanitizationIsActive(): bool
+    {
+        $configuration = $this->contentObjectRenderer->mergeTSRef(
+            ['parseFunc' => '< lib.parseFunc'],
+            'parseFunc'
+        );
+        return !empty($configuration['parseFunc.']['htmlSanitize']) && $configuration['parseFunc.']['htmlSanitize'] === '1';
     }
 }
