@@ -25,11 +25,11 @@ class ComponentRenderer
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
-    public function renderComponent(ComponentRenderingData $componentRenderingData, ContentObjectRenderer $contentObjectRenderer): string
+    public function renderComponent(ComponentRenderingData $componentRenderingData, ContentObjectRenderer $contentObjectRenderer, ?TagBuilder $tagBuilder = null): string
     {
         $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer);
         $this->eventDispatcher->dispatch($event);
-        return $this->renderMarkup($event->getComponentRenderingData());
+        return $this->renderMarkup($event->getComponentRenderingData(), $tagBuilder);
     }
 
     /**
@@ -58,14 +58,15 @@ class ComponentRenderer
         return $event->getComponentRenderingData();
     }
 
-    private function renderMarkup(ComponentRenderingData $componentRenderingData): string
+    private function renderMarkup(ComponentRenderingData $componentRenderingData, ?TagBuilder $tagBuilder = null): string
     {
         if ($componentRenderingData->getTagName() === null) {
             throw new AssertionFailedException('No tag name provided', 1730800497);
         }
 
-        /** @var TagBuilder $tagBuilder */
-        $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
+        if ($tagBuilder === null) {
+            $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
+        }
         $tagBuilder->setTagName($componentRenderingData->getTagName());
         if (!empty($componentRenderingData->getTagContent())) {
             $tagBuilder->setContent($componentRenderingData->getTagContent());
