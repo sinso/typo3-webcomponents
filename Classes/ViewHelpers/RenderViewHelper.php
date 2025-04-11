@@ -11,14 +11,16 @@ use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 
-class RenderViewHelper extends AbstractViewHelper
+class RenderViewHelper extends AbstractTagBasedViewHelper
 {
     protected $escapeOutput = false;
 
     public function initializeArguments(): void
     {
+        $this->registerUniversalTagAttributes();
+
         $this->registerArgument('component', 'string', 'Class name', true);
         $this->registerArgument('inputData', 'array', 'input data', false, []);
         $this->registerArgument('contentObjectRenderer', ContentObjectRenderer::class, 'current cObj');
@@ -43,7 +45,7 @@ class RenderViewHelper extends AbstractViewHelper
             return $e->getRenderingPlaceholder();
         }
 
-        return $componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
+        return $componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer, $this->tag);
     }
 
     protected function getContentObjectRenderer(): ContentObjectRenderer
