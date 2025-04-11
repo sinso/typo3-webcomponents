@@ -11,14 +11,10 @@ use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 class RenderViewHelper extends AbstractViewHelper
 {
-    use CompileWithRenderStatic;
-
     protected $escapeOutput = false;
 
     public function initializeArguments(): void
@@ -30,39 +26,46 @@ class RenderViewHelper extends AbstractViewHelper
         $this->registerArgument('table', 'string', 'current db table', false, '');
     }
 
-    /**
-     * @param array<string, mixed> $arguments
-     */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
+    public function render(): string
     {
         /** @var ComponentRenderer $componentRenderer */
         $componentRenderer = GeneralUtility::makeInstance(ComponentRenderer::class);
-        if ($arguments['contentObjectRenderer'] instanceof ContentObjectRenderer) {
-            $contentObjectRenderer = $arguments['contentObjectRenderer'];
-        } else {
-            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            /** @var array<string, mixed> $record */
-            $record = $arguments['record'];
-            /** @var string $table */
-            $table = $arguments['table'];
-            $contentObjectRenderer->start($record, $table);
-        }
-        /** @var ContentObjectRenderer $contentObjectRenderer */
+        $contentObjectRenderer = $this->getContentObjectRenderer();
         /** @var array<string, mixed> $additionalData */
-        $additionalData = $arguments['inputData'];
+        $additionalData = $this->arguments['inputData'];
         $inputData = new InputData($contentObjectRenderer->data, $contentObjectRenderer->getCurrentTable(), $additionalData);
         /** @var class-string<ComponentInterface> $componentClassName */
-        $componentClassName = $arguments['component'];
+        $componentClassName = $this->arguments['component'];
         try {
             $componentRenderingData = $componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
         } catch (AssertionFailedException $e) {
-            /** @var LogManager $logManager */
-            $logManager = GeneralUtility::makeInstance(LogManager::class);
-            $logger = $logManager->getLogger(__CLASS__);
-            $logger->warning('Component evaluation failed', ['exception' => $e]);
+            $this->logException($e);
             return $e->getRenderingPlaceholder();
         }
 
         return $componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
+    }
+
+    protected function getContentObjectRenderer(): ContentObjectRenderer
+    {
+        if ($this->arguments['contentObjectRenderer'] instanceof ContentObjectRenderer) {
+            return $this->arguments['contentObjectRenderer'];
+        }
+
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        /** @var array<string, mixed> $record */
+        $record = $this->arguments['record'];
+        /** @var string $table */
+        $table = $this->arguments['table'];
+        $contentObjectRenderer->start($record, $table);
+        return $contentObjectRenderer;
+    }
+
+    protected function logException(\Exception $e): void
+    {
+        /** @var LogManager $logManager */
+        $logManager = GeneralUtility::makeInstance(LogManager::class);
+        $logger = $logManager->getLogger(__CLASS__);
+        $logger->warning('Component evaluation failed', ['exception' => $e]);
     }
 }
