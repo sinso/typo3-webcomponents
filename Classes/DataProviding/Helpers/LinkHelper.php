@@ -17,15 +17,15 @@ class LinkHelper
     ) {}
 
     /**
-     * You can pass your own ContentObjectRenderer instance if you need to, but for the sake of simplicity you can just omit it.
+     * You can pass your own ContentObjectRenderer instance if you need to, but for the sake of simplicity, you can just omit it.
      *
      * @throws UnableToLinkException
      */
-    public function createLinkResult(string|int $linkParameter, ?ContentObjectRenderer $contentObjectRenderer = null): LinkResultInterface
+    public function createLinkResult(string|int $linkParameter, ?string $linkText = '', ?ContentObjectRenderer $contentObjectRenderer = null): LinkResultInterface
     {
         $contentObjectRenderer = $contentObjectRenderer ?? $this->contentObjectRenderer;
 
-        $linkResult = $this->linkFactory->create('', ['parameter' => $linkParameter], $contentObjectRenderer);
+        $linkResult = $this->linkFactory->create((string)$linkText, ['parameter' => $linkParameter], $contentObjectRenderer);
         if ($linkResult->getLinkText() !== null && $this->htmlSanitizationIsActive($contentObjectRenderer)) {
             // HTML sanitization encodes the link text, so we need to decode it to pass clean data to web components
             $linkResult = $linkResult->withLinkText(html_entity_decode((string)$linkResult->getLinkText()));
