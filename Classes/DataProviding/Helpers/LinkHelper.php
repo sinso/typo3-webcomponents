@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sinso\Webcomponents\DataProviding\Helpers;
 
+use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Typolink\LinkFactory;
 use TYPO3\CMS\Frontend\Typolink\LinkResultInterface;
@@ -31,6 +32,18 @@ class LinkHelper
             $linkResult = $linkResult->withLinkText(html_entity_decode((string)$linkResult->getLinkText()));
         }
         return $linkResult;
+    }
+
+    /**
+     * @throws UnableToLinkException
+     */
+    public function createLinkResultFromFileReference(FileReference $fileReference, ?ContentObjectRenderer $contentObjectRenderer = null): LinkResultInterface
+    {
+        return $this->createLinkResult(
+            't3://file?uid=' . $fileReference->getOriginalFile()->getUid(),
+            $fileReference->getTitle(),
+            $contentObjectRenderer,
+        );
     }
 
     private function htmlSanitizationIsActive(ContentObjectRenderer $contentObjectRenderer): bool
