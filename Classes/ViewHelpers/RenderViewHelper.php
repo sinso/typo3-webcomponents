@@ -35,6 +35,7 @@ class RenderViewHelper extends AbstractTagBasedViewHelper
         $contentObjectRenderer = $this->getContentObjectRenderer();
         /** @var array<string, mixed> $additionalData */
         $additionalData = $this->arguments['inputData'];
+        $additionalData['_childContent'] = $this->renderChildren();
         $inputData = new InputData($contentObjectRenderer->data, $contentObjectRenderer->getCurrentTable(), $additionalData);
         /** @var class-string<ComponentInterface> $componentClassName */
         $componentClassName = $this->arguments['component'];
