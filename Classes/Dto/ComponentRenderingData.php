@@ -18,15 +18,6 @@ final class ComponentRenderingData
         return $this->tagContent;
     }
 
-    /**
-     * @deprecated Use withTagContent() instead.
-     */
-    public function setTagContent(?string $tagContent): void
-    {
-        trigger_error('Setting tag content is deprecated. Use withTagContent() instead.', E_USER_DEPRECATED);
-        $this->tagContent = $tagContent;
-    }
-
     public function withTagContent(?string $tagContent): self
     {
         $clonedObject = clone $this;
@@ -42,31 +33,11 @@ final class ComponentRenderingData
         return $this->tagProperties;
     }
 
-    /**
-     * @deprecated Use withTagProperty() instead.
-     */
-    public function setTagProperty(string $key, mixed $value): void
-    {
-        trigger_error('Setting tag property is deprecated. Use withTagProperty() instead.', E_USER_DEPRECATED);
-        $this->tagProperties[$key] = $value;
-    }
-
     public function withTagProperty(string $key, mixed $value): self
     {
         $clonedObject = clone $this;
         $clonedObject->tagProperties[$key] = $value;
         return $clonedObject;
-    }
-
-    /**
-     * @deprecated Use withTagProperties() instead.
-     *
-     * @param array<string, mixed> $tagProperties
-     */
-    public function setTagProperties(array $tagProperties): void
-    {
-        trigger_error('Setting tag properties is deprecated. Use withTagProperties() instead.', E_USER_DEPRECATED);
-        $this->tagProperties = $tagProperties;
     }
 
     /**
@@ -82,15 +53,6 @@ final class ComponentRenderingData
     public function getTagName(): ?string
     {
         return $this->tagName;
-    }
-
-    /**
-     * @deprecated Use withTagName() instead.
-     */
-    public function setTagName(string $tagName): void
-    {
-        trigger_error('Setting tag name is deprecated. Use withTagName() instead.', E_USER_DEPRECATED);
-        $this->tagName = $tagName;
     }
 
     public function withTagName(string $tagName): self

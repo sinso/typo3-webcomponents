@@ -53,8 +53,8 @@ class MyContentElement implements ComponentInterface
         ];
 
         return (new ComponentRenderingData())
-            ->withTagName('my-web-component')
-            ->withTagProperties($properties);
+            ->withTagProperties($properties)
+            ->withTagName('my-web-component');
     }
 }
 ```
@@ -69,8 +69,8 @@ The component classes can use the `\Sinso\Webcomponents\DataProviding\Traits\Ass
 namespace Acme\MyExt\Components;
 
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
+use Sinso\Webcomponents\DataProviding\Helpers\FileReferencesHelper;
 use Sinso\Webcomponents\DataProviding\Traits\Assert;
-use Sinso\Webcomponents\DataProviding\Traits\FileReferences;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
 use TYPO3\CMS\Core\Resource\FileReference;
@@ -78,19 +78,22 @@ use TYPO3\CMS\Core\Resource\FileReference;
 class Image implements ComponentInterface
 {
     use Assert;
-    use FileReferences;
+
+    public function __construct(
+        private readonly FileReferencesHelper $fileReferencesHelper,
+    ) {}
 
     public function provide(InputData $inputData): ComponentRenderingData
     {
         $record = $inputData->record;
-        $image = $this->loadFileReference($record, 'image');
+        $image = $this->fileReferencesHelper->loadFileReference($record, 'image');
 
         // rendering will stop here if no image is found
         $this->assert($image instanceof FileReference, 'No image found for record ' . $record['uid']);
 
         return (new ComponentRenderingData())
-            ->withTagName('my-image')
-            ->withTagProperties(['imageUrl' => $image->getPublicUrl()]);
+            ->withTagProperty('imageUrl', $image->getPublicUrl())
+            ->withTagName('my-image');
     }
 }
 ```
@@ -104,7 +107,7 @@ class Image implements ComponentInterface
 >
 
 <wc:render
-    component="Acme\\MyExt\\Components\\LocationOverview"
+    component="Acme\MyExt\Components\LocationOverview"
     inputData="{'header': 'This is the header'}"
 />
 
