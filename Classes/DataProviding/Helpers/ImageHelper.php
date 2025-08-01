@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Sinso\Webcomponents\DataProviding\Traits;
+namespace Sinso\Webcomponents\DataProviding\Helpers;
 
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Extbase\Domain\Model\FileReference as ExtbaseFileReference;
 use TYPO3\CMS\Extbase\Service\ImageService;
 
-trait Image
+class ImageHelper
 {
-    private ImageService $imageService;
-
-    public function injectImageService(ImageService $imageService): void
-    {
-        $this->imageService = $imageService;
-    }
+    public function __construct(
+        private readonly ImageService $imageService,
+    ) {}
 
     public function getImageUri($image, $width, $height, string $cropVariant = 'default', bool $absolute = false): string
     {
