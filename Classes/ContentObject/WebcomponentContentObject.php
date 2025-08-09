@@ -44,18 +44,18 @@ class WebcomponentContentObject extends AbstractContentObject
             $inputData->additionalData = $conf['additionalInputData.'];
         }
         $componentClassName = $contentObjectRenderer->stdWrapValue('component', $conf, null);
-        if (!is_string($componentClassName)) {
-            $this->logger->warning('No component class name provided', ['conf' => $conf, 'data' => $inputData->record]);
-            return '';
+        if (!empty($componentClassName)) {
+            try {
+                /** @var class-string<ComponentInterface> $componentClassName */
+                $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
+            } catch (AssertionFailedException $e) {
+                $this->logger->warning('Component evaluation failed', ['conf' => $conf, 'data' => $inputData->record, 'exception' => $e]);
+                return $e->getRenderingPlaceholder();
+            }
+        } else {
+            $componentRenderingData = new ComponentRenderingData();
         }
 
-        try {
-            /** @var class-string<ComponentInterface> $componentClassName */
-            $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
-        } catch (AssertionFailedException $e) {
-            $this->logger->warning('Component evaluation failed', ['conf' => $conf, 'data' => $inputData->record, 'exception' => $e]);
-            return $e->getRenderingPlaceholder();
-        }
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
 
         $markup = $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
@@ -78,7 +78,7 @@ class WebcomponentContentObject extends AbstractContentObject
                 if (is_array($value)) {
                     continue;
                 }
-                $componentRenderingData = $componentRenderingData->withTagProperty($key, $this->cObj?->cObjGetSingle($value, $conf['properties.'][$key . '.']));
+                $componentRenderingData = $componentRenderingData->withTagProperty($key, $this->cObj?->stdWrap($value, $conf['properties.'][$key . '.'] ?? []));
             }
         }
         $tagName = $this->cObj?->stdWrapValue('tagName', $conf);
