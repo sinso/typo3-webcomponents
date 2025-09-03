@@ -52,6 +52,10 @@ class LinkHelper
             ['parseFunc' => '< lib.parseFunc'],
             'parseFunc'
         );
-        return !empty($configuration['parseFunc.']['htmlSanitize']) && $configuration['parseFunc.']['htmlSanitize'] === '1';
+        if (empty($configuration['parseFunc.']['htmlSanitize'])) {
+            return true;
+        }
+
+        return $configuration['parseFunc.']['htmlSanitize'] !== '0';
     }
 }
