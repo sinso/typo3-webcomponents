@@ -35,7 +35,7 @@ class ComponentRenderer
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function evaluateComponent(InputData $inputData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer): ComponentRenderingData
+    public function evaluateComponent(InputData $inputData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer = null): ComponentRenderingData
     {
         /** @var ComponentInterface $component */
         $component = GeneralUtility::makeInstance($componentClassName);
