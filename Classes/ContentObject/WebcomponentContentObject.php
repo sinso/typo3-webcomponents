@@ -49,7 +49,7 @@ class WebcomponentContentObject extends AbstractContentObject
                 /** @var class-string<ComponentInterface> $componentClassName */
                 $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
             } catch (AssertionFailedException $e) {
-                $this->logger->warning('Component evaluation failed', ['conf' => $conf, 'data' => $inputData->record, 'exception' => $e]);
+                $this->logger->info('Component evaluation failed', ['conf' => $conf, 'data' => $inputData->record, 'exception' => $e]);
                 return $e->getRenderingPlaceholder();
             }
         } else {
