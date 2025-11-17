@@ -36,7 +36,11 @@ class LabelHelper
 
     private function isFrontendTypoScriptAvailable(): bool
     {
-        return $this->getRequest()?->getAttribute('frontend.typoscript') instanceof FrontendTypoScript;
+        $frontendTypoScript = $this->getRequest()?->getAttribute('frontend.typoscript');
+        if (!$frontendTypoScript instanceof FrontendTypoScript) {
+            return false;
+        }
+        return $frontendTypoScript->hasSetup();
     }
 
     private function getRequest(): ?ServerRequestInterface
