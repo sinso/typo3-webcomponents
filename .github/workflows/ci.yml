@@ -28,8 +28,8 @@ jobs:
           extensions: mbstring, intl, pdo_sqlite
           tools: composer:v2
 
-      - name: Composer install
-        run: composer install --ignore-platform-reqs --no-interaction
+      - name: Composer update (highest)
+        run: composer update --ignore-platform-reqs --no-interaction --prefer-stable
 
       - name: Prepare TYPO3 extension path
         run: |
@@ -37,6 +37,31 @@ jobs:
           if [ ! -L public/typo3conf/ext/webcomponents ]; then ln -snvf ../../../. public/typo3conf/ext/webcomponents; fi
 
       - name: Functional Tests
+        env:
+          typo3DatabaseDriver: pdo_sqlite
+          typo3DatabaseName: typo3
+        run: vendor/bin/phpunit -c .github/phpunit.functional.xml
+
+  functional-tests-lowest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, pdo_sqlite
+          tools: composer:v2
+
+      - name: Composer update (lowest)
+        run: composer update --ignore-platform-reqs --no-interaction --prefer-lowest --prefer-stable
+
+      - name: Prepare TYPO3 extension path
+        run: |
+          mkdir -p public/typo3conf/ext/
+          if [ ! -L public/typo3conf/ext/webcomponents ]; then ln -snvf ../../../. public/typo3conf/ext/webcomponents; fi
+
+      - name: Functional Tests (lowest)
         env:
           typo3DatabaseDriver: pdo_sqlite
           typo3DatabaseName: typo3
