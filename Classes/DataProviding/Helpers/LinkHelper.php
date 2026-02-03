@@ -41,7 +41,7 @@ class LinkHelper
     {
         return $this->createLinkResult(
             't3://file?uid=' . $fileReference->getOriginalFile()->getUid(),
-            $fileReference->getTitle(),
+            $fileReference->getTitle() ?: $fileReference->getOriginalFile()->getName(),
             $contentObjectRenderer,
         );
     }
