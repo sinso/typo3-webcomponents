@@ -1,0 +1,11 @@
+{
+  "name": "julius-baer/inline-items-helper-fixture",
+  "type": "typo3-cms-extension",
+  "description": "Functional test fixture extension for InlineItemsHelper",
+  "version": "1.0.0",
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "inline_items_helper_fixture"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+"tx_inlineitemshelperfixture_child"
+,"uid","pid","parentid","parenttable","sys_language_uid","input_1","t3ver_wsid","t3ver_state","sorting"
+,"1","1","1","tx_inlineitemshelperfixture_parent","-1","BJB","1","1","2"
+,"2","1","1","tx_inlineitemshelperfixture_parent","-1","BJB","1","1","1"
+
+"tx_inlineitemshelperfixture_parent"
+,"uid"
+,"1"
