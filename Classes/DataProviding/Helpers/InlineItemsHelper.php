@@ -8,7 +8,6 @@ use Doctrine\DBAL\ArrayParameterType;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -25,49 +24,55 @@ class InlineItemsHelper
     ) {}
 
     /**
-     * @param array<string, string|integer> $parentRecord
-     * @return list<array<string, string|integer>>
+     * @param array<string, int|string> $parentRecord
+     * @return list<array<string, int|string>>
      */
     public function loadInlineItems(array $parentRecord, string $inlineFieldName, string $parentTable = 'tt_content'): array
     {
         // if the field is empty, and we're not in a workspace context, then there are no inline items
-        /** @var int|string $versioningWorkspaceId */
-        $versioningWorkspaceId = $this->context->getPropertyFromAspect('workspace', 'id');
-        $versioningWorkspaceId = (int)$versioningWorkspaceId;
+        $workspaceId = $this->context->getPropertyFromAspect('workspace', 'id');
+        $versioningWorkspaceId = is_int($workspaceId) || is_string($workspaceId) ? (int)$workspaceId : 0;
         if (empty($parentRecord[$inlineFieldName]) && $versioningWorkspaceId === 0) {
             return [];
         }
 
         $inlineFieldTca = $this->getInlineFieldTca($inlineFieldName, $parentTable);
-        $foreignTable = $inlineFieldTca['config']['foreign_table'] ?? null;
-        if ($foreignTable === null) {
+        $inlineFieldConfig = $inlineFieldTca['config'] ?? [];
+        $foreignTable = $inlineFieldConfig['foreign_table'] ?? null;
+        if (!is_string($foreignTable) || $foreignTable === '') {
             throw new \Exception(
                 sprintf('Could not load inline items for field "%s". Missing \'foreign_table\' in its TCA configuration', $inlineFieldName),
                 1686299043
             );
         }
-        $foreignField = $inlineFieldTca['config']['foreign_field'] ?? null;
-        $foreignTableTca = $GLOBALS['TCA'][$foreignTable];
-        $foreignSortby = $inlineFieldTca['config']['foreign_sortby'] ?? $foreignTableTca['ctrl']['sortby'] ?? null;
+        $foreignField = $inlineFieldConfig['foreign_field'] ?? null;
+        if (!is_string($foreignField) || $foreignField === '') {
+            $foreignField = null;
+        }
+        $foreignTableTca = $GLOBALS['TCA'][$foreignTable] ?? [];
+        $foreignSortby = $inlineFieldConfig['foreign_sortby'] ?? $foreignTableTca['ctrl']['sortby'] ?? null;
+        if (!is_string($foreignSortby) || $foreignSortby === '') {
+            $foreignSortby = null;
+        }
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($foreignTable);
         $queryBuilder->getRestrictions()->removeAll();
 
         $parentRecordId = $parentRecord['_LOCALIZED_UID'] ?? $parentRecord['uid'] ?? 0;
-        $constraints = [];
+        $constraints = $this->pageRepository->getDefaultConstraints($foreignTable);
         if (!empty($foreignField)) {
-            $constraints[] = $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($parentRecordId, Connection::PARAM_INT));
+            $constraints['foreign_field'] = $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($parentRecordId, Connection::PARAM_INT));
         } else {
             $itemsUidList = GeneralUtility::intExplode(',', (string)($parentRecord[$inlineFieldName] ?? ''), true);
             if (empty($itemsUidList)) {
                 return [];
             }
-            $constraints[] = $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($itemsUidList, ArrayParameterType::INTEGER));
+            $constraints['uidList'] = $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($itemsUidList, ArrayParameterType::INTEGER));
         }
-        if (isset($foreignTableTca['ctrl']['languageField'])) {
-            $constraints[] = $queryBuilder->expr()->in($foreignTableTca['ctrl']['languageField'], $queryBuilder->createNamedParameter([-1, $parentRecord['sys_language_uid'] ?? 0], ArrayParameterType::INTEGER));
+        $languageField = $foreignTableTca['ctrl']['languageField'] ?? null;
+        if (is_string($languageField) && $languageField !== '') {
+            $constraints['language'] = $queryBuilder->expr()->in($languageField, $queryBuilder->createNamedParameter([-1, $parentRecord['sys_language_uid'] ?? 0], ArrayParameterType::INTEGER));
         }
-        $constraints[] = QueryHelper::stripLogicalOperatorPrefix($this->pageRepository->enableFields($foreignTable));
-        $queryBuilder->select('*')->from($foreignTable)->where(...$constraints);
+        $queryBuilder->select('*')->from($foreignTable)->where(...array_values($constraints));
         if ($foreignSortby) {
             $queryBuilder->orderBy($foreignSortby);
         }
@@ -96,7 +101,7 @@ class InlineItemsHelper
     }
 
     /**
-     * @return array{config: array{foreign_table?: string, foreign_field?: string, foreign_sortby?: string}, label: string, type: string}
+     * @return array{config?: array<string, mixed>}
      */
     protected function getInlineFieldTca(string $inlineFieldName, string $localTableName = 'tt_content'): array
     {

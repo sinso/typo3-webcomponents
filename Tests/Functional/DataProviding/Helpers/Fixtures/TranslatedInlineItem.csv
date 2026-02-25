@@ -1,0 +1,8 @@
+"tx_inlineitemshelperfixture_child"
+,"uid","pid","parentid","parenttable","sys_language_uid","input_1"
+,"1","1","1","tx_inlineitemshelperfixture_parent","0","BJB"
+,"2","1","2","tx_inlineitemshelperfixture_parent","1","BJB/overlaid"
+
+"tx_inlineitemshelperfixture_parent"
+,"uid"
+,"1"
