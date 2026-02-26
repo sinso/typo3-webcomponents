@@ -15,17 +15,17 @@
 	},
 	"require": {
 		"ext-json": "*",
-		"typo3/cms-core": "^12.0 || ^13.0",
-		"typo3/cms-frontend": "*"
+		"typo3/cms-core": "^13.4",
+		"typo3/cms-frontend": "^13.4"
 	},
 	"require-dev": {
-		"phpstan/phpstan": "^1.11.9",
-		"saschaegerer/phpstan-typo3": "^1.10",
-		"friendsofphp/php-cs-fixer": "^3.61",
-		"phpunit/phpunit": "^10.5.35",
+		"phpstan/phpstan": "^2.1",
+		"saschaegerer/phpstan-typo3": "^2.1",
+		"friendsofphp/php-cs-fixer": "^3.94",
+		"phpunit/phpunit": "^11.5",
 		"typo3/coding-standards": "^0.8.0",
-		"typo3/testing-framework": "^8.2.3",
-		"ssch/typo3-rector": "^2.6"
+		"typo3/testing-framework": "^9.3",
+		"ssch/typo3-rector": "^3.12"
 	},
 	"suggest": {
 		"contentblocks/content-blocks": "Define webcomponents as content blocks"
@@ -40,7 +40,7 @@
 			"@rector"
 		],
 		"php-cs-fixer": "php-cs-fixer fix --config=./.github/.php-cs-fixer.dist.php",
-		"phpstan": "phpstan analyse --configuration=./.github/phpstan.neon",
+		"phpstan": "phpstan analyse --configuration=./.github/phpstan.neon --memory-limit=1G",
 		"rector": "rector process --config=./.github/rector.php"
 	}
 }

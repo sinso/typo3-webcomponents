@@ -5,3 +5,8 @@ parameters:
     level: 9
     paths:
         - ../Classes
+    ignoreErrors:
+            - identifier: trait.unused
+              path: ../Classes/DataProviding/Traits/ContentObjectRendererTrait.php
+            - identifier: trait.unused
+              path: ../Classes/DataProviding/Traits/RenderHtml.php
