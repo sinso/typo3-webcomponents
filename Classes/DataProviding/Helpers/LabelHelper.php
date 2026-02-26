@@ -45,6 +45,8 @@ class LabelHelper
 
     private function getRequest(): ?ServerRequestInterface
     {
-        return $GLOBALS['TYPO3_REQUEST'] ?? null;
+        /** @var ServerRequestInterface|null $request */
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        return $request;
     }
 }

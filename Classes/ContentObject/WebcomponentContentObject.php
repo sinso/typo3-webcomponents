@@ -6,7 +6,6 @@ namespace Sinso\Webcomponents\ContentObject;
 
 use Psr\Log\LoggerInterface;
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
-use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
@@ -24,12 +23,15 @@ class WebcomponentContentObject extends AbstractContentObject
      */
     public function render($conf = []): string
     {
+        $contentObjectRenderer = $this->getContentObjectRenderer();
+        /** @var array<string, mixed> $record */
+        $record = $contentObjectRenderer->data;
+
         $inputData = new InputData(
-            $this->cObj?->data ?? [],
-            $this->cObj?->getCurrentTable() ?? '',
+            $record,
+            $contentObjectRenderer->getCurrentTable(),
         );
 
-        $contentObjectRenderer = $this->getContentObjectRenderer();
         if (is_array($conf['additionalInputData.'] ?? null)) {
             // apply stdWrap to all additionalInputData properties
             foreach ($conf['additionalInputData.'] as $key => $value) {
@@ -44,9 +46,8 @@ class WebcomponentContentObject extends AbstractContentObject
             $inputData->additionalData = $conf['additionalInputData.'];
         }
         $componentClassName = $contentObjectRenderer->stdWrapValue('component', $conf, null);
-        if (!empty($componentClassName)) {
+        if (is_string($componentClassName) && $componentClassName !== '') {
             try {
-                /** @var class-string<ComponentInterface> $componentClassName */
                 $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
             } catch (AssertionFailedException $e) {
                 $this->logger->info('Component evaluation failed', ['conf' => $conf, 'data' => $inputData->record, 'exception' => $e]);
@@ -56,7 +57,7 @@ class WebcomponentContentObject extends AbstractContentObject
             $componentRenderingData = new ComponentRenderingData();
         }
 
-        $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $conf);
+        $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $contentObjectRenderer, $conf);
 
         $markup = $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
 
@@ -71,17 +72,17 @@ class WebcomponentContentObject extends AbstractContentObject
     /**
      * @param array<string, mixed> $conf
      */
-    private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, array $conf): ComponentRenderingData
+    private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObjectRenderer, array $conf): ComponentRenderingData
     {
         if (is_array($conf['properties.'] ?? null)) {
             foreach ($conf['properties.'] as $key => $value) {
-                if (is_array($value)) {
+                if (!is_scalar($value)) {
                     continue;
                 }
-                $componentRenderingData = $componentRenderingData->withTagProperty($key, $this->cObj?->stdWrap($value, $conf['properties.'][$key . '.'] ?? []));
+                $componentRenderingData = $componentRenderingData->withTagProperty((string)$key, $contentObjectRenderer->stdWrap((string)$value, $conf['properties.'][$key . '.'] ?? []));
             }
         }
-        $tagName = $this->cObj?->stdWrapValue('tagName', $conf);
+        $tagName = $contentObjectRenderer->stdWrapValue('tagName', $conf);
         if (is_string($tagName) && $tagName !== '') {
             return $componentRenderingData->withTagName($tagName);
         }

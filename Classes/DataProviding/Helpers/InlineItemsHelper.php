@@ -25,7 +25,7 @@ class InlineItemsHelper
 
     /**
      * @param array<string, int|string> $parentRecord
-     * @return list<array<string, int|string>>
+     * @return list<array<string, mixed>>
      */
     public function loadInlineItems(array $parentRecord, string $inlineFieldName, string $parentTable = 'tt_content'): array
     {
@@ -49,8 +49,8 @@ class InlineItemsHelper
         if (!is_string($foreignField) || $foreignField === '') {
             $foreignField = null;
         }
-        $foreignTableTca = $GLOBALS['TCA'][$foreignTable] ?? [];
-        $foreignSortby = $inlineFieldConfig['foreign_sortby'] ?? $foreignTableTca['ctrl']['sortby'] ?? null;
+        $foreignTableCtrl = $this->getTableCtrl($foreignTable);
+        $foreignSortby = $inlineFieldConfig['foreign_sortby'] ?? $foreignTableCtrl['sortby'] ?? null;
         if (!is_string($foreignSortby) || $foreignSortby === '') {
             $foreignSortby = null;
         }
@@ -68,7 +68,7 @@ class InlineItemsHelper
             }
             $constraints['uidList'] = $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($itemsUidList, ArrayParameterType::INTEGER));
         }
-        $languageField = $foreignTableTca['ctrl']['languageField'] ?? null;
+        $languageField = $foreignTableCtrl['languageField'] ?? null;
         if (is_string($languageField) && $languageField !== '') {
             $constraints['language'] = $queryBuilder->expr()->in($languageField, $queryBuilder->createNamedParameter([-1, $parentRecord['sys_language_uid'] ?? 0], ArrayParameterType::INTEGER));
         }
@@ -80,11 +80,11 @@ class InlineItemsHelper
         $processedItems = [];
         foreach ($queriedItems as $item) {
             // workspace overlay:
-            $this->pageRepository->versionOL($foreignTable, $item);
-            if ($item === false) {
+            $workspaceItem = $this->applyVersionOverlay($foreignTable, $item);
+            if (!is_array($workspaceItem)) {
                 continue;
             }
-            $processedItems[] = $item;
+            $processedItems[] = $workspaceItem;
         }
 
         if (empty($foreignField)) {
@@ -101,13 +101,55 @@ class InlineItemsHelper
     }
 
     /**
-     * @return array{config?: array<string, mixed>}
+     * @param array<string, mixed> $item
+     * @return mixed
+     */
+    private function applyVersionOverlay(string $table, array $item): mixed
+    {
+        $this->pageRepository->versionOL($table, $item);
+        return $item;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getTableCtrl(string $table): array
+    {
+        $tableTca = $this->getGlobalTca()[$table] ?? null;
+        if (!is_array($tableTca)) {
+            return [];
+        }
+
+        $ctrl = $tableTca['ctrl'] ?? null;
+        return is_array($ctrl) ? $ctrl : [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getGlobalTca(): array
+    {
+        $tca = $GLOBALS['TCA'] ?? null;
+        return is_array($tca) ? $tca : [];
+    }
+
+    /**
+     * @return array{config?: array<array-key, mixed>}
      */
     protected function getInlineFieldTca(string $inlineFieldName, string $localTableName = 'tt_content'): array
     {
-        if (!isset($GLOBALS['TCA'][$localTableName]['columns'][$inlineFieldName])) {
+        $tableTca = $this->getGlobalTca()[$localTableName] ?? null;
+        $columns = is_array($tableTca) ? ($tableTca['columns'] ?? null) : null;
+        $fieldTca = is_array($columns) ? ($columns[$inlineFieldName] ?? null) : null;
+        if (!is_array($fieldTca)) {
             throw new \Exception('Tried to process inline records for non existing field ' . $localTableName . '.' . $inlineFieldName, 1587038305);
         }
-        return $GLOBALS['TCA'][$localTableName]['columns'][$inlineFieldName];
+
+        $config = $fieldTca['config'] ?? null;
+        if (!is_array($config)) {
+            return [];
+        }
+
+        return ['config' => $config];
     }
 }

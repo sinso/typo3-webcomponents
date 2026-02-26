@@ -23,11 +23,13 @@ class DateTimeFormatHelper
 
     private function getLocaleFromRequest(): ?Locale
     {
-        return $this->getRequest()->getAttribute('language')?->getLocale();
+        return $this->getRequest()?->getAttribute('language')?->getLocale();
     }
 
-    private function getRequest(): ServerRequestInterface
+    private function getRequest(): ?ServerRequestInterface
     {
-        return $GLOBALS['TYPO3_REQUEST'];
+        /** @var ServerRequestInterface|null $request */
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        return $request;
     }
 }

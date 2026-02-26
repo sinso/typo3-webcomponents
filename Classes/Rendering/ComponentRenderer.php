@@ -32,14 +32,18 @@ class ComponentRenderer
         return $this->renderMarkup($event->getComponentRenderingData(), $tagBuilder);
     }
 
-    /**
-     * @param class-string<ComponentInterface> $componentClassName
-     */
     public function evaluateComponent(InputData $inputData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer = null): ComponentRenderingData
     {
-        /** @var ComponentInterface $component */
+        if (!class_exists($componentClassName)) {
+            throw new AssertionFailedException(
+                'Configured component class "' . $componentClassName . '" does not exist',
+                1729064011
+            );
+        }
+
         $component = GeneralUtility::makeInstance($componentClassName);
-        $this->assert($component instanceof ComponentInterface, 'Component must implement ComponentInterface');
+        $this->assert($component instanceof ComponentInterface, 'Configured component class "' . $componentClassName . '" must implement ' . ComponentInterface::class);
+        /** @var ComponentInterface $component */
         if ($contentObjectRenderer === null) {
             $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObjectRenderer->start([]);
@@ -52,7 +56,7 @@ class ComponentRenderer
             ArrayUtility::removeNullValuesRecursive($componentRenderingData->getTagProperties())
         );
 
-        $event = new ComponentEvaluated($componentRenderingData, $contentObjectRenderer, $inputData, $componentClassName);
+        $event = new ComponentEvaluated($componentRenderingData, $contentObjectRenderer, $inputData, get_class($component));
         $this->eventDispatcher->dispatch($event);
 
         return $event->getComponentRenderingData();
