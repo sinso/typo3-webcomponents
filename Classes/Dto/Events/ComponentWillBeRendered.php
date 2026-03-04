@@ -22,6 +22,7 @@ final class ComponentWillBeRendered
     public function __construct(
         ComponentRenderingData $componentRenderingData,
         public readonly ContentObjectRenderer $contentObjectRenderer,
+        public readonly string $componentClassName,
     ) {
         $this->componentRenderingData = $componentRenderingData;
     }

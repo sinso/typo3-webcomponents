@@ -9,6 +9,7 @@ use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\DataProviding\Traits\Assert;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentEvaluated;
+use Sinso\Webcomponents\Dto\Events\ComponentWasRendered;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -17,6 +18,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
+/**
+ * @internal Render content elements via \Sinso\Webcomponents\ContentObject\WebcomponentContentObject.
+ *           For rendering from PHP context use \Sinso\Webcomponents\DataProviding\Helpers\ComponentRenderingHelper.
+ */
 class ComponentRenderer
 {
     use Assert;
@@ -25,11 +30,25 @@ class ComponentRenderer
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
 
-    public function renderComponent(ComponentRenderingData $componentRenderingData, ContentObjectRenderer $contentObjectRenderer, ?TagBuilder $tagBuilder = null): string
+    public function renderComponent(
+        ComponentRenderingData $componentRenderingData,
+        ContentObjectRenderer $contentObjectRenderer,
+        string $componentClassName,
+        ?TagBuilder $tagBuilder = null,
+    ): string
     {
-        $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer);
+        $event = new ComponentWillBeRendered($componentRenderingData, $contentObjectRenderer, $componentClassName);
         $this->eventDispatcher->dispatch($event);
-        return $this->renderMarkup($event->getComponentRenderingData(), $tagBuilder);
+
+        $markup = $this->renderMarkup($event->getComponentRenderingData(), $tagBuilder);
+        $componentWasRenderedEvent = new ComponentWasRendered(
+            $markup,
+            $event->getComponentRenderingData(),
+            $contentObjectRenderer,
+            $componentClassName,
+        );
+        $this->eventDispatcher->dispatch($componentWasRenderedEvent);
+        return $componentWasRenderedEvent->getMarkup();
     }
 
     public function evaluateComponent(InputData $inputData, string $componentClassName, ?ContentObjectRenderer $contentObjectRenderer = null): ComponentRenderingData

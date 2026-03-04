@@ -49,7 +49,7 @@ class RenderViewHelper extends AbstractTagBasedViewHelper
             return $e->getRenderingPlaceholder();
         }
 
-        return $componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer, $this->tag);
+        return $componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer, $componentClassName, $this->tag);
     }
 
     protected function getContentObjectRenderer(): ContentObjectRenderer
