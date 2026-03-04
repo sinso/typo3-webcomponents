@@ -50,6 +50,6 @@ class ComponentRenderingHelper
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start($inputData->record, $inputData->tableName);
 
-        return $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
+        return $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer, $componentClassName);
     }
 }

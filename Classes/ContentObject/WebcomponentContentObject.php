@@ -24,6 +24,7 @@ class WebcomponentContentObject extends AbstractContentObject
     public function render($conf = []): string
     {
         $contentObjectRenderer = $this->getContentObjectRenderer();
+        $renderComponentClassName = '';
         /** @var array<string, mixed> $record */
         $record = $contentObjectRenderer->data;
 
@@ -47,6 +48,7 @@ class WebcomponentContentObject extends AbstractContentObject
         }
         $componentClassName = $contentObjectRenderer->stdWrapValue('component', $conf, null);
         if (is_string($componentClassName) && $componentClassName !== '') {
+            $renderComponentClassName = $componentClassName;
             try {
                 $componentRenderingData = $this->componentRenderer->evaluateComponent($inputData, $componentClassName, $contentObjectRenderer);
             } catch (AssertionFailedException $e) {
@@ -59,7 +61,7 @@ class WebcomponentContentObject extends AbstractContentObject
 
         $componentRenderingData = $this->evaluateTypoScriptConfiguration($componentRenderingData, $contentObjectRenderer, $conf);
 
-        $markup = $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer);
+        $markup = $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer, $renderComponentClassName);
 
         // apply stdWrap
         if (is_array($conf['stdWrap.'] ?? null)) {
