@@ -10,6 +10,9 @@ use Sinso\Webcomponents\DataProviding\AssertionFailedException;
  */
 trait Assert
 {
+    /**
+     * @phpstan-assert true $condition
+     */
     protected function assert(bool $condition, string $message): void
     {
         if ($condition) {
