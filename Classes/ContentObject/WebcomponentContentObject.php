@@ -76,12 +76,17 @@ class WebcomponentContentObject extends AbstractContentObject
      */
     private function evaluateTypoScriptConfiguration(ComponentRenderingData $componentRenderingData, \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObjectRenderer, array $conf): ComponentRenderingData
     {
-        if (is_array($conf['properties.'] ?? null)) {
-            foreach ($conf['properties.'] as $key => $value) {
+        $properties = $conf['properties.'] ?? null;
+        if (is_array($properties)) {
+            foreach ($properties as $key => $value) {
                 if (!is_scalar($value)) {
                     continue;
                 }
-                $componentRenderingData = $componentRenderingData->withTagProperty((string)$key, $contentObjectRenderer->stdWrap((string)$value, $conf['properties.'][$key . '.'] ?? []));
+                $propertyConfiguration = $properties[$key . '.'] ?? [];
+                if (!is_array($propertyConfiguration)) {
+                    $propertyConfiguration = [];
+                }
+                $componentRenderingData = $componentRenderingData->withTagProperty((string)$key, $contentObjectRenderer->stdWrap((string)$value, $propertyConfiguration));
             }
         }
         $tagName = $contentObjectRenderer->stdWrapValue('tagName', $conf);
