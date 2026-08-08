@@ -84,6 +84,7 @@ class InlineItemsHelper
             if (!is_array($workspaceItem)) {
                 continue;
             }
+            /** @var array<string, mixed> $workspaceItem */
             $processedItems[] = $workspaceItem;
         }
 
@@ -102,7 +103,7 @@ class InlineItemsHelper
 
     /**
      * @param array<string, mixed> $item
-     * @return mixed
+     * @return mixed The record, or false if it must not be accessed in the current workspace
      */
     private function applyVersionOverlay(string $table, array $item): mixed
     {
