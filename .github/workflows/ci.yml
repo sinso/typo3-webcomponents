@@ -69,6 +69,9 @@ jobs:
 
   phpstan:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '8.1', '8.3' ]
     steps:
       - uses: actions/checkout@v3
       - uses: php-actions/composer@v6
@@ -76,10 +79,13 @@ jobs:
           args: --ignore-platform-reqs
 
       - name: PHPStan Static Analysis
-        run: composer phpstan
+        run: composer phpstan -v
 
   php-cs-fixer:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '8.1', '8.3' ]
     steps:
       - uses: actions/checkout@v3
       - uses: php-actions/composer@v6
@@ -91,6 +97,9 @@ jobs:
 
   rector:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '8.1', '8.3' ]
     steps:
       - uses: actions/checkout@v3
       - uses: php-actions/composer@v6
