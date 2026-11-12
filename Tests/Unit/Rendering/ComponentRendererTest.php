@@ -11,6 +11,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\Events\ComponentWasRendered;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
+use Sinso\Webcomponents\Dto\Markup;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -45,6 +46,46 @@ class ComponentRendererTest extends UnitTestCase
         // should roughly look like: <my-element class="foo">bar</my-element>, but don't care about whitespaces
         self::assertMatchesRegularExpression(
             '/<my-element\s+class="foo">\s*bar\s*<\/my-element>/',
+            $result,
+        );
+    }
+
+    #[Test]
+    public function rendersTagContentAsTextOrMarkup(): void
+    {
+        $componentRenderingData = (new ComponentRenderingData())->withTagName('my-element');
+
+        $text = $this->subject->renderComponent(
+            $componentRenderingData->withTagContent('<b>bar</b>'),
+            $this->createMock(ContentObjectRenderer::class),
+            'My\\Component\\ClassName',
+        );
+        $markup = $this->subject->renderComponent(
+            $componentRenderingData->withTagContent(new Markup('<b>bar</b>')),
+            $this->createMock(ContentObjectRenderer::class),
+            'My\\Component\\ClassName',
+        );
+
+        self::assertSame('<my-element>&lt;b&gt;bar&lt;/b&gt;</my-element>', $text);
+        self::assertSame('<my-element><b>bar</b></my-element>', $markup);
+    }
+
+    #[Test]
+    public function rendersMarkupInTagPropertiesAsItsHtml(): void
+    {
+        $componentRenderingData = (new ComponentRenderingData())
+            ->withTagName('my-element')
+            ->withTagProperty('text', new Markup('<p>Hi</p>'))
+            ->withTagProperty('items', [['html' => new Markup('<b>bold</b>')]]);
+
+        $result = $this->subject->renderComponent(
+            $componentRenderingData,
+            $this->createMock(ContentObjectRenderer::class),
+            'My\\Component\\ClassName',
+        );
+
+        self::assertSame(
+            '<my-element text="&lt;p&gt;Hi&lt;/p&gt;" items="[{&quot;html&quot;:&quot;&lt;b&gt;bold&lt;\\/b&gt;&quot;}]"></my-element>',
             $result,
         );
     }

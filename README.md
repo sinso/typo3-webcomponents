@@ -70,6 +70,42 @@ Since the generated TypoScript comes last, page TypoScript must reference the co
 (`renderObj =< tt_content`) rather than copy them (`renderObj < tt_content`): a copy is resolved while the earlier
 TypoScript is parsed and would not contain the components registered with the attribute.
 
+## Tag content: text and markup
+
+Tag properties are always escaped. For the tag content, the type decides:
+
+* A `string` is plain text and gets escaped.
+* A `\Sinso\Webcomponents\Dto\Markup` is written into the page as is.
+
+```php
+use Sinso\Webcomponents\Dto\Markup;
+
+return (new ComponentRenderingData())
+    ->withTagContent(Markup::join(
+        new Markup('<h2 slot="headline">'),
+        $inputData->record['header'], // escaped
+        new Markup('</h2>'),
+        $this->componentRenderingHelper->evaluateAndRenderComponent(Button::class), // already Markup
+    ))
+    ->withTagName('my-teaser');
+```
+
+These return `Markup`:
+
+* `ComponentRenderingHelper::evaluateAndRenderComponent()`
+* `RenderHtml::renderHtml()`
+* `ComponentRenderingData::getTagContent()` (or `null`)
+* the `_childContent` that `<wc:render>` passes to the component in `InputData::$additionalData`, if it has children
+
+`Markup::join()` concatenates parts, escaping the strings among them. Create a `Markup` from a string only when you know
+the string is safe HTML. All other values in `InputData::$additionalData`, from `<wc:render inputData="...">` or
+TypoScript `additionalInputData`, are passed on as they are. Wrap them in `Markup` if they hold HTML.
+
+A `Markup` passed as a tag property is written into the attribute as its HTML, and escaped like any other attribute.
+
+The link text of a `LinkResult` created by `LinkHelper` is plain text. Use `getUrl()` and `getLinkText()` instead of the
+`LinkResult`'s string cast or `getHtml()`, which treat the link text as HTML.
+
 ## Abort rendering
 
 The component classes can use the `\Sinso\Webcomponents\DataProviding\Traits\Assert` trait to abort rendering, for example if the record is not available:
