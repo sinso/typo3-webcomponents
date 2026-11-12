@@ -12,6 +12,7 @@ use Sinso\Webcomponents\Dto\Events\ComponentEvaluated;
 use Sinso\Webcomponents\Dto\Events\ComponentWasRendered;
 use Sinso\Webcomponents\Dto\Events\ComponentWillBeRendered;
 use Sinso\Webcomponents\Dto\InputData;
+use Sinso\Webcomponents\Dto\Markup;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -91,10 +92,14 @@ class ComponentRenderer
             $tagBuilder = GeneralUtility::makeInstance(TagBuilder::class);
         }
         $tagBuilder->setTagName($componentRenderingData->getTagName());
-        if (!empty($componentRenderingData->getTagContent())) {
-            $tagBuilder->setContent($componentRenderingData->getTagContent());
+        $tagContent = $componentRenderingData->getTagContent();
+        if ($tagContent !== null && !$tagContent->isEmpty()) {
+            $tagBuilder->setContent((string)$tagContent);
         }
         foreach ($componentRenderingData->getTagProperties() as $key => $value) {
+            if ($value instanceof Markup) {
+                $value = (string)$value;
+            }
             if (!is_scalar($value)) {
                 $value = json_encode($value);
             }

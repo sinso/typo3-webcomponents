@@ -7,6 +7,7 @@ namespace Sinso\Webcomponents\DataProviding\Helpers;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\ComponentRenderingData;
 use Sinso\Webcomponents\Dto\InputData;
+use Sinso\Webcomponents\Dto\Markup;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -41,7 +42,7 @@ class ComponentRenderingHelper
     /**
      * @param class-string<ComponentInterface> $componentClassName
      */
-    public function evaluateAndRenderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): string
+    public function evaluateAndRenderComponent(string $componentClassName, ?InputData $inputData = null, ?string $slot = null): Markup
     {
         if ($inputData === null) {
             $inputData = new InputData();
@@ -50,6 +51,6 @@ class ComponentRenderingHelper
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start($inputData->record, $inputData->tableName);
 
-        return $this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer, $componentClassName);
+        return new Markup($this->componentRenderer->renderComponent($componentRenderingData, $contentObjectRenderer, $componentClassName));
     }
 }

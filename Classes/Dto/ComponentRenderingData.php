@@ -6,22 +6,25 @@ namespace Sinso\Webcomponents\Dto;
 
 final class ComponentRenderingData
 {
-    private ?string $tagContent = null;
+    private ?Markup $tagContent = null;
     private ?string $tagName = null;
     /**
      * @var array<string, mixed> $tagProperties
      */
     private array $tagProperties = [];
 
-    public function getTagContent(): ?string
+    public function getTagContent(): ?Markup
     {
         return $this->tagContent;
     }
 
-    public function withTagContent(?string $tagContent): self
+    /**
+     * A string is plain text and gets escaped. Pass Markup to write HTML.
+     */
+    public function withTagContent(string|Markup|null $tagContent): self
     {
         $clonedObject = clone $this;
-        $clonedObject->tagContent = $tagContent;
+        $clonedObject->tagContent = is_string($tagContent) ? Markup::join($tagContent) : $tagContent;
         return $clonedObject;
     }
 

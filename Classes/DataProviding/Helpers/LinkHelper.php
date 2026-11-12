@@ -18,6 +18,8 @@ class LinkHelper
     ) {}
 
     /**
+     * The link text of the result is plain text. Without a $linkText, TYPO3 generates one from the link target.
+     * Don't cast the result to string or call getHtml(): both write the link text into the <a> tag unescaped.
      * You can pass your own ContentObjectRenderer instance if you need to, but for the sake of simplicity, you can just omit it.
      *
      * @throws UnableToLinkException
@@ -26,10 +28,11 @@ class LinkHelper
     {
         $contentObjectRenderer = $contentObjectRenderer ?? $this->contentObjectRenderer;
 
-        $linkResult = $this->linkFactory->create((string)$linkText, ['parameter' => $linkParameter], $contentObjectRenderer);
-        if ($linkResult->getLinkText() !== null && $this->htmlSanitizationIsActive($contentObjectRenderer)) {
-            // HTML sanitization encodes the link text, so we need to decode it to pass clean data to web components
-            $linkResult = $linkResult->withLinkText(html_entity_decode((string)$linkResult->getLinkText()));
+        $linkText = (string)$linkText;
+        $linkResult = $this->linkFactory->create($linkText, ['parameter' => $linkParameter], $contentObjectRenderer);
+        if ($linkText === '' && $linkResult->getLinkText() !== null) {
+            // TYPO3 HTML-encodes the link text it generates for most link types (htmlspecialchars() or lib.parseFunc)
+            $linkResult = $linkResult->withLinkText(html_entity_decode($linkResult->getLinkText()));
         }
         return $linkResult;
     }
@@ -44,20 +47,5 @@ class LinkHelper
             $fileReference->getTitle() ?: $fileReference->getOriginalFile()->getName(),
             $contentObjectRenderer,
         );
-    }
-
-    private function htmlSanitizationIsActive(ContentObjectRenderer $contentObjectRenderer): bool
-    {
-        $configuration = $contentObjectRenderer->mergeTSRef(
-            ['parseFunc' => '< lib.parseFunc'],
-            'parseFunc'
-        );
-
-        $htmlSanitize = $configuration['parseFunc.']['htmlSanitize'] ?? null;
-        if ($htmlSanitize === null) {
-            return true;
-        }
-
-        return (string)$htmlSanitize !== '0';
     }
 }

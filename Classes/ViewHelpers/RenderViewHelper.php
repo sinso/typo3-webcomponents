@@ -7,6 +7,7 @@ namespace Sinso\Webcomponents\ViewHelpers;
 use Sinso\Webcomponents\DataProviding\AssertionFailedException;
 use Sinso\Webcomponents\DataProviding\ComponentInterface;
 use Sinso\Webcomponents\Dto\InputData;
+use Sinso\Webcomponents\Dto\Markup;
 use Sinso\Webcomponents\Rendering\ComponentRenderer;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -38,7 +39,10 @@ class RenderViewHelper extends AbstractTagBasedViewHelper
         $contentObjectRenderer = $this->getContentObjectRenderer();
         /** @var array<string, mixed> $additionalData */
         $additionalData = $this->arguments['inputData'];
-        $additionalData['_childContent'] = $this->renderChildren();
+        $childContent = $this->renderChildren();
+        if (is_scalar($childContent) || $childContent instanceof \Stringable) {
+            $additionalData['_childContent'] = new Markup((string)$childContent);
+        }
         $inputData = new InputData($contentObjectRenderer->data, $contentObjectRenderer->getCurrentTable(), $additionalData);
         /** @var class-string<ComponentInterface> $componentClassName */
         $componentClassName = $this->arguments['component'];
